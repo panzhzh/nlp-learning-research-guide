@@ -15,15 +15,22 @@
       name: 'NLP 学习指导',
       repo: 'https://github.com/panzhzh/nlp-learning-research-guide',
       
-      // 设置文档根目录
-      basePath: '/docs/',
-      homepage: 'README.md',
+      // 重要：不要设置 basePath，让 autoSidebar 从根目录扫描
+      homepage: 'docs/README.md',
       
-      // 使用自动侧边栏
-      autoSidebar: true,
+      // autoSidebar 配置
+      autoSidebar: {
+        collapse: false,
+        header: {
+          open: true,
+          focus: false,
+        },
+        titleLevel: 3,
+        ignore: []
+      },
+      
       subMaxLevel: 3,
-      maxLevel: 3,
-
+      maxLevel: 4,
       auto2top: true,
 
       search: {
@@ -43,6 +50,7 @@
   <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2/dist/docsify-copy-code.min.js"></script>
-  <script src="//unpkg.com/docsify-auto-sidebar@0.3.5/docsify-auto-sidebar.min.js"></script>
+  <!-- 使用最新版本的 autoSidebar -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-auto-sidebar@latest/dist/docsify-auto-sidebar.min.js"></script>
 </body>
 </html>
