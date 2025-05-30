@@ -66,15 +66,9 @@
 - 6.2 投稿与审稿流程
 - 6.3 学术诚信与规范
 
-### [第7章 职业发展与规划](./chapter7-career-development.md)
-- 7.1 学术生涯规划
-- 7.2 产业界发展路径
-- 7.3 持续学习与发展
-
 ### [附录](./appendix/)
 - [附录A 重要会议与期刊列表](./appendix/conferences-journals-list.md)
 - [附录B 常用工具与资源](./appendix/tools-resources.md)
-- [附录C 中英文术语对照表](./appendix/terminology.md)
 
 ## 🚀 如何使用本指导
 
@@ -102,8 +96,8 @@
 
 ## 📧 联系方式
 
-- 项目维护者：[您的姓名]
-- 邮箱：[您的邮箱]
+- 项目维护者：ipanzhzh
+- 邮箱：ipanzhzh@gmail.com
 - 研究方向：自然语言处理、情感分析、虚假信息检测
 
 ## 📄 许可证
