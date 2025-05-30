@@ -47,7 +47,6 @@
 * **📖 附录**
   * [附录A 重要会议与期刊列表](appendix/conferences-journals-list.md)
   * [附录B 常用工具与资源](appendix/tools-resources.md)
-  * [附录C 中英文术语对照表](appendix/terminology.md)
 
 ---
 
