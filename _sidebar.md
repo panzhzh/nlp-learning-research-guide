@@ -44,12 +44,6 @@
     * [6.2 投稿与审稿流程](chapter6-academic-writing-publishing.md#_62-投稿与审稿流程)
     * [6.3 学术诚信与规范](chapter6-academic-writing-publishing.md#_63-学术诚信与规范)
 
-* **🚀 发展篇**
-  * [第7章 职业发展与规划](chapter7-career-development.md)
-    * [7.1 学术生涯规划](chapter7-career-development.md#_71-学术生涯规划)
-    * [7.2 产业界发展路径](chapter7-career-development.md#_72-产业界发展路径)
-    * [7.3 持续学习与发展](chapter7-career-development.md#_73-持续学习与发展)
-
 * **📖 附录**
   * [附录A 重要会议与期刊列表](appendix/conferences-journals-list.md)
   * [附录B 常用工具与资源](appendix/tools-resources.md)
