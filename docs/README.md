@@ -90,12 +90,6 @@
 
 感谢所有为本项目做出贡献的研究者和开发者。
 
-## ⭐ Star History
-
-如果这个项目对您有帮助，请给我们一个 Star！
-
-[![Star History Chart](https://api.star-history.com/svg?repos=username/nlp-learning-research-guide&type=Date)](https://star-history.com/#username/nlp-learning-research-guide&Date)
-
 ---
 
 **免责声明**：本指导仅供学术交流使用，具体的学术标准和要求请以各机构和期刊的官方规定为准。
