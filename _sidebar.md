@@ -58,6 +58,6 @@
 ---
 
 * **🔗 快速链接**
-  * [⭐ GitHub仓库](https://github.com/your-username/nlp-learning-research-guide)
-  * [📧 问题反馈](https://github.com/your-username/nlp-learning-research-guide/issues)
-  * [🤝 贡献指南](https://github.com/your-username/nlp-learning-research-guide#-贡献指南)
+  * [⭐ GitHub仓库](https://github.com/panzhzh/nlp-learning-research-guide)
+  * [📧 问题反馈](https://github.com/panzhzh/nlp-learning-research-guide/issues)
+  * [🤝 贡献指南](https://github.com/panzhzh/nlp-learning-research-guide#-贡献指南)
