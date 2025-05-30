@@ -17,20 +17,20 @@
 
 ```
 code/
-├── README.md                           # 代码总体说明
+├── README.md                           # 项目总体说明
 ├── requirements.txt                    # 依赖包列表
 ├── environment.yml                     # conda环境配置
 ├── setup.py                           # 包安装配置
 ├── config/                            # 🔧 配置文件
+│   ├── __init__.py
 │   ├── model_configs.yaml             # 模型配置(支持多种变体)
-│   ├── training_configs.yaml
-│   ├── data_configs.yaml
+│   ├── training_configs.yaml          # 训练超参数配置
+│   ├── data_configs.yaml              # 数据处理配置
 │   └── supported_models.yaml          # 支持的模型列表
-├── data/                              # 📚 数据集目录
-│   ├── raw/                           # 原始数据
-│   │   ├── train/
-│   │   ├── val/
-│   │   └── test/
+├── data/                              # 📚 MR2数据集目录
+│   ├── train/
+│   ├── val/
+│   ├── test/
 │   ├── processed/                     # 处理后的数据
 │   │   ├── train_features.pkl
 │   │   ├── val_features.pkl
@@ -39,98 +39,128 @@ code/
 │   ├── dataset_items_val.json        # 验证集数据项
 │   ├── dataset_items_test.json       # 测试集数据项
 │   └── README.md                     # 数据集说明文档
-├── preprocessing/                      # 📝 预处理
+├── preprocessing/                      # 📝 MR2数据预处理
 │   ├── __init__.py
-│   ├── text_processing.py             # 文本处理(分词、清洗等)
-│   ├── image_processing.py            # 🖼️ 图像处理
-│   ├── graph_construction.py          # 📊 图构建
-│   └── data_augmentation.py           # 数据增强
+│   ├── text_processing.py             # MR2文本处理(中英文分词、清洗等)
+│   ├── image_processing.py            # MR2图像预处理和特征提取
+│   ├── graph_construction.py          # MR2社交图构建和图特征工程
+│   └── data_augmentation.py           # MR2数据增强策略
+├── datasets/                          # 📚 MR2数据集加载
+│   ├── __init__.py
+│   ├── mr2_dataset.py                 # MR2数据集PyTorch类
+│   └── data_loaders.py                # MR2数据加载器配置
 ├── models/                            # 🤖 模型实现
 │   ├── __init__.py
-│   ├── traditional/                   # 传统方法
-│   │   ├── ml_classifiers.py          # SVM/NB/RF等统一接口
-│   │   └── feature_engineering.py
+│   ├── traditional/                   # 传统机器学习方法
+│   │   ├── __init__.py
+│   │   ├── ml_classifiers.py          # SVM/NB/RF/LR等统一接口
+│   │   ├── feature_engineering.py     # 特征工程(TF-IDF/N-gram/统计特征)
+│   │   └── ensemble_methods.py        # 集成学习方法
 │   ├── neural_networks/               # 基础神经网络
-│   │   ├── cnn_models.py              # CNN架构
-│   │   ├── rnn_models.py              # RNN/LSTM/GRU
-│   │   ├── attention_models.py        # 注意力机制
-│   │   └── transformer_base.py        # 基础Transformer
+│   │   ├── __init__.py
+│   │   ├── cnn_models.py              # CNN架构(TextCNN/ImageCNN)
+│   │   ├── rnn_models.py              # RNN/LSTM/GRU/BiLSTM
+│   │   ├── attention_models.py        # 注意力机制(Self-Attention/Cross-Attention)
+│   │   ├── transformer_base.py        # 基础Transformer实现
+│   │   └── hybrid_models.py           # 混合神经网络架构
 │   ├── pretrained/                    # 🤗 预训练模型
+│   │   ├── __init__.py
 │   │   ├── encoder_models.py          # BERT类(BERT/RoBERTa/ALBERT/ELECTRA/DeBERTa)
 │   │   ├── decoder_models.py          # GPT类(GPT/GPT-2/GPT-Neo)
-│   │   ├── encoder_decoder_models.py  # T5类(T5/mT5/UmT5)
-│   │   ├── chinese_models.py          # 中文模型统一接口
-│   │   └── multilingual_models.py     # 多语言模型统一接口
+│   │   ├── encoder_decoder_models.py  # T5类(T5/mT5/UmT5/BART)
+│   │   ├── chinese_models.py          # 中文模型(Chinese-BERT/MacBERT/ERNIE)
+│   │   ├── multilingual_models.py     # 多语言模型(mBERT/XLM-R/RemBERT)
+│   │   └── model_adapters.py          # 模型适配器和包装器
 │   ├── multimodal/                    # 🖼️🔤 多模态模型
-│   │   ├── vision_language_models.py  # CLIP/BLIP/ALBEF等
-│   │   ├── fusion_strategies.py       # 各种融合方法
-│   │   ├── chinese_multimodal.py      # 中文多模态
-│   │   └── social_media_models.py     # 社交媒体特化模型
+│   │   ├── __init__.py
+│   │   ├── vision_language_models.py  # CLIP/BLIP/ALBEF/FLAVA等
+│   │   ├── fusion_strategies.py       # 融合方法(Early/Late/Attention融合)
+│   │   ├── chinese_multimodal.py      # 中文多模态(Chinese-CLIP/Wenlan)
+│   │   ├── social_media_models.py     # 社交媒体特化模型
+│   │   └── cross_modal_attention.py   # 跨模态注意力机制
 │   ├── graph_neural_networks/         # 📊 图神经网络
+│   │   ├── __init__.py
 │   │   ├── basic_gnn_layers.py        # GCN/GAT/GraphSAGE/GIN层
 │   │   ├── advanced_gnn_models.py     # Graph Transformer/GraphBERT
-│   │   ├── heterogeneous_gnn.py       # 异构图神经网络
-│   │   ├── temporal_gnn.py            # 时序图神经网络
-│   │   └── multimodal_gnn.py          # 多模态GNN
+│   │   ├── heterogeneous_gnn.py       # 异构图神经网络(HAN/HGT)
+│   │   ├── temporal_gnn.py            # 时序图神经网络(TGCN/EvolveGCN)
+│   │   ├── multimodal_gnn.py          # 多模态图神经网络
+│   │   └── graph_pooling.py           # 图池化层(GlobalPool/SAGPool)
 │   └── llms/                          # 🚀 大语言模型
+│       ├── __init__.py
 │       ├── open_source_llms.py        # 开源LLM(LLaMA/ChatGLM/Baichuan/Qwen)
-│       ├── multimodal_llms.py         # 多模态LLM(LLaVA/BLIP-2)
-│       └── prompt_engineering.py      # 提示工程
+│       ├── multimodal_llms.py         # 多模态LLM(LLaVA/BLIP-2/InstructBLIP)
+│       ├── prompt_engineering.py      # 提示工程和模板设计
+│       └── few_shot_learning.py       # 少样本学习策略
 ├── embeddings/                        # 📐 嵌入方法
 │   ├── __init__.py
 │   ├── word_embeddings.py             # Word2Vec/GloVe/FastText
-│   ├── sentence_embeddings.py         # SentenceBERT/SimCSE等
-│   ├── image_embeddings.py            # 图像特征提取
-│   └── multimodal_embeddings.py       # 多模态嵌入
-├── rag/                               # 🔍 RAG系统
+│   ├── sentence_embeddings.py         # SentenceBERT/SimCSE/E5等
+│   ├── image_embeddings.py            # ResNet/ViT/CLIP图像特征
+│   ├── multimodal_embeddings.py       # 多模态嵌入对齐
+│   └── graph_embeddings.py            # Node2Vec/DeepWalk/GraphSAINT
+├── rag/                               # 🔍 RAG检索增强生成
 │   ├── __init__.py
-│   ├── retrievers.py                  # 各种检索器
-│   ├── generators.py                  # 各种生成器
-│   ├── vector_stores.py               # 向量数据库
-│   └── multimodal_rag.py              # 多模态RAG
+│   ├── retrievers.py                  # 密集检索器(DPR/ColBERT/E5)
+│   ├── generators.py                  # 生成器(T5/BART/LLaMA)
+│   ├── vector_stores.py               # 向量数据库(Faiss/Chroma/Weaviate)
+│   ├── multimodal_rag.py              # 多模态RAG系统
+│   └── verification_rag.py            # 事实验证RAG系统
 ├── training/                          # 🏋️ 训练框架
 │   ├── __init__.py
-│   ├── base_trainer.py                # 基础训练器
-│   ├── task_trainers.py               # 任务特定训练器
-│   ├── distributed_training.py        # 分布式训练
-│   ├── fine_tuning_methods.py         # 微调方法(LoRA/P-tuning等)
-│   └── loss_functions.py              # 各种损失函数
-├── evaluation/                        # 📊 评估
+│   ├── base_trainer.py                # 基础训练器抽象类
+│   ├── classification_trainer.py      # 分类任务训练器
+│   ├── multimodal_trainer.py          # 多模态训练器
+│   ├── graph_trainer.py               # 图神经网络训练器
+│   ├── distributed_training.py        # 分布式训练(DDP/DeepSpeed)
+│   ├── fine_tuning_methods.py         # 微调方法(LoRA/AdaLoRA/P-tuning/Prefix)
+│   ├── loss_functions.py              # 损失函数(CrossEntropy/Focal/Contrastive)
+│   └── optimization.py                # 优化器和学习率调度
+├── evaluation/                        # 📊 评估模块
 │   ├── __init__.py
-│   ├── metrics.py                     # 各种评估指标
-│   ├── statistical_tests.py           # 统计检验
-│   └── visualization.py               # 结果可视化
-├── utils/                             # 🛠️ 工具
+│   ├── metrics.py                     # 评估指标(Accuracy/F1/AUC/MAP)
+│   ├── rumor_metrics.py               # 谣言检测专用指标
+│   ├── statistical_tests.py           # 统计显著性检验
+│   ├── visualization.py               # 结果可视化和分析
+│   └── error_analysis.py              # 错误分析和案例研究
+├── utils/                             # 🛠️ 工具模块
 │   ├── __init__.py
-│   ├── data_utils.py                  # 数据处理工具
-│   ├── model_utils.py                 # 模型工具
-│   ├── file_utils.py                  # 文件操作
-│   ├── logging_utils.py               # 日志工具
-│   └── experiment_tracking.py         # 实验跟踪
-├── datasets/                          # 📚 数据集处理类
-│   ├── __init__.py
-│   ├── base_dataset.py                # 基础数据集类
-│   ├── multimodal_dataset.py          # 多模态数据集处理
-│   ├── graph_dataset.py               # 图数据集处理
-│   └── data_loaders.py                # 数据加载器
+│   ├── model_utils.py                 # 模型相关工具(保存/加载/转换)
+│   ├── file_utils.py                  # 文件操作(JSON/CSV/图像读写)
+│   ├── logging_utils.py               # 日志配置和管理
+│   ├── experiment_tracking.py         # 实验跟踪(WandB/TensorBoard)
+│   ├── reproducibility.py            # 实验可复现性工具
+│   └── visualization_utils.py         # 通用可视化工具
 ├── examples/                          # 📝 使用示例
-│   ├── quick_start.py                 # 快速开始
-│   ├── text_classification_demo.py    # 文本分类示例
+│   ├── __init__.py
+│   ├── quick_start.py                 # 5分钟快速开始
+│   ├── text_classification_demo.py    # 文本分类完整流程
 │   ├── multimodal_analysis_demo.py    # 多模态分析示例
 │   ├── graph_analysis_demo.py         # 图分析示例
+│   ├── llm_inference_demo.py          # 大模型推理示例
+│   ├── rag_demo.py                    # RAG系统演示
 │   └── tutorials/                     # Jupyter教程
 │       ├── 01_getting_started.ipynb
 │       ├── 02_text_models.ipynb
 │       ├── 03_multimodal_models.ipynb
 │       ├── 04_graph_models.ipynb
-│       └── 05_advanced_techniques.ipynb
-├── tests/                             # 🧪 测试
-│   └── test_*.py
-└── scripts/                           # 📜 脚本
-    ├── setup_environment.py           # 环境设置
-    ├── download_models.py             # 下载模型
-    ├── prepare_dataset.py             # 数据集预处理
-    └── run_experiments.py             # 运行实验
+│       ├── 05_advanced_techniques.ipynb
+│       └── 06_llm_and_rag.ipynb
+├── tests/                             # 🧪 测试模块
+│   ├── __init__.py
+│   ├── test_preprocessing.py          # 预处理测试
+│   ├── test_models.py                 # 模型测试
+│   ├── test_training.py               # 训练测试
+│   ├── test_evaluation.py             # 评估测试
+│   └── test_utils.py                  # 工具测试
+└── scripts/                           # 📜 执行脚本
+    ├── __init__.py
+    ├── setup_environment.py           # 环境设置脚本
+    ├── download_models.py             # 预训练模型下载
+    ├── prepare_dataset.py             # MR2数据集预处理
+    ├── run_experiments.py             # 批量实验执行
+    ├── hyperparameter_search.py       # 超参数搜索
+    └── model_comparison.py            # 模型性能对比
 ```
 
 ### 📝 数据预处理 (`preprocessing/`)
