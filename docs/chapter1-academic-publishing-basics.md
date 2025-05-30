@@ -575,12 +575,4 @@ IF(Y) = 期刊在Y年被引用的(Y-1)年和(Y-2)年论文总数 / 期刊在(Y-1
 
 ---
 
-## 📚 延伸阅读
-
-- [学术写作与发表指南](./chapter6-academic-writing-publishing.md)
-- [NLP领域发展概览](./chapter2-nlp-overview.md)
-- [重要会议与期刊列表](./appendix/conferences-journals-list.md)
-
----
-
-**[⬅️ 返回目录](./README.md) | [下一章：NLP发展概览 ➡️](./chapter2-nlp-overview.md)**
+**[⬅️ 返回目录](./docs/README.md) | [下一章：自然语言处理发展概览 ➡️](./docs/chapter2-nlp-overview.md)**

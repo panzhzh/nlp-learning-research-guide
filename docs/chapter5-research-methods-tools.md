@@ -395,3 +395,7 @@ def train(rank, world_size):
 - 保证研究结果的可重现性
 
 这些技能将为后续的深入研究和论文写作奠定坚实的技术基础。
+
+---
+
+**[⬅️ 虚假信息检测研究专题](./docs/chapter4-misinformation-detection.md) | [下一章：学术写作与发表 ➡️](./docs/chapter6-academic-writing-publishing.md)**

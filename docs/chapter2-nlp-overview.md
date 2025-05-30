@@ -375,3 +375,7 @@ Word2Vec的提出标志着NLP进入分布式表示时代：
 - **交叉融合**：结合其他领域知识创新
 
 下一章将深入探讨情感分析这一重要的NLP应用领域，为学生提供专业方向的详细指导。
+
+---
+
+**[⬅️ 返回目录](./docs/chapter1-academic-publishing-basics.md) | [下一章：情感分析研究专题 ➡️](./docs/chapter3-sentiment-analysis.md)**
