@@ -1,0 +1,412 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# Author: ipanzhzh
+# config/training_configs.yaml
+
+# 训练配置文件
+# 包含各种训练任务的超参数和设置
+
+# 通用训练配置
+general:
+  task_type: "classification"  # classification, regression, generation
+  num_classes: 3
+  class_names: ["Non-rumor", "Rumor", "Unverified"]
+  
+  # 数据配置
+  data:
+    train_batch_size: 32
+    eval_batch_size: 64
+    max_sequence_length: 512
+    image_size: [224, 224]
+    data_workers: 4
+    pin_memory: true
+    
+    # 数据增强
+    augmentation:
+      text:
+        enabled: true
+        methods: ["synonym_replacement", "random_insertion"]
+        aug_prob: 0.1
+      image:
+        enabled: true
+        methods: ["random_flip", "random_rotation", "color_jitter"]
+        aug_prob: 0.3
+  
+  # 训练参数
+  training:
+    num_epochs: 10
+    learning_rate: 2e-5
+    weight_decay: 0.01
+    warmup_steps: 500
+    max_grad_norm: 1.0
+    
+    # 早停配置
+    early_stopping:
+      enabled: true
+      patience: 3
+      monitor: "val_f1"
+      mode: "max"
+      min_delta: 0.001
+    
+    # 学习率调度
+    lr_scheduler:
+      type: "linear"  # linear, cosine, polynomial, constant
+      warmup_ratio: 0.1
+      num_cycles: 0.5
+
+# 传统机器学习配置
+traditional_ml:
+  cross_validation:
+    enabled: true
+    cv_folds: 5
+    stratified: true
+    random_state: 42
+  
+  hyperparameter_search:
+    enabled: true
+    method: "grid_search"  # grid_search, random_search, bayesian
+    cv_folds: 3
+    scoring: "f1_macro"
+    
+    # SVM参数搜索空间
+    svm:
+      C: [0.1, 1, 10, 100]
+      kernel: ["rbf", "linear", "poly"]
+      gamma: ["scale", "auto", 0.001, 0.01, 0.1]
+    
+    # Random Forest参数搜索空间
+    random_forest:
+      n_estimators: [50, 100, 200]
+      max_depth: [null, 10, 20, 30]
+      min_samples_split: [2, 5, 10]
+      min_samples_leaf: [1, 2, 4]
+
+# 神经网络训练配置
+neural_networks:
+  # 基础神经网络
+  basic_nn:
+    epochs: 50
+    batch_size: 32
+    learning_rate: 0.001
+    optimizer: "adam"
+    
+    optimizer_params:
+      adam:
+        betas: [0.9, 0.999]
+        eps: 1e-8
+        weight_decay: 1e-4
+      sgd:
+        momentum: 0.9
+        weight_decay: 1e-4
+        nesterov: true
+    
+    # 损失函数
+    loss_function: "cross_entropy"  # cross_entropy, focal_loss, label_smoothing
+    loss_params:
+      focal_loss:
+        alpha: 1.0
+        gamma: 2.0
+      label_smoothing:
+        smoothing: 0.1
+    
+    # 正则化
+    regularization:
+      dropout: 0.5
+      batch_norm: true
+      layer_norm: false
+
+# 预训练模型微调配置
+pretrained_finetuning:
+  # BERT系列微调
+  bert:
+    epochs: 5
+    batch_size: 16
+    learning_rate: 2e-5
+    warmup_ratio: 0.1
+    weight_decay: 0.01
+    
+    # 层级学习率
+    layer_lr_decay: 0.9
+    freeze_embeddings: false
+    freeze_encoder_layers: 0  # 冻结前N层
+    
+    # Dropout配置
+    hidden_dropout_prob: 0.1
+    attention_probs_dropout_prob: 0.1
+    classifier_dropout: 0.1
+  
+  # 多语言模型微调
+  multilingual:
+    epochs: 8
+    batch_size: 12
+    learning_rate: 1e-5
+    warmup_ratio: 0.15
+    gradient_accumulation_steps: 2
+    
+    # 语言特定配置
+    language_adaptation: true
+    adapter_size: 64
+    adapter_dropout: 0.1
+
+# 多模态训练配置
+multimodal:
+  # CLIP微调
+  clip:
+    epochs: 10
+    batch_size: 24
+    learning_rate: 1e-5
+    warmup_ratio: 0.1
+    
+    # 模态特定学习率
+    text_lr_multiplier: 1.0
+    image_lr_multiplier: 0.1
+    
+    # 融合策略
+    fusion:
+      method: "attention"  # concatenation, attention, cross_attention
+      fusion_layers: 2
+      fusion_dropout: 0.1
+      
+    # 对比学习
+    contrastive_learning:
+      enabled: true
+      temperature: 0.07
+      margin: 0.2
+  
+  # BLIP训练
+  blip:
+    epochs: 8
+    batch_size: 16
+    learning_rate: 5e-6
+    warmup_ratio: 0.1
+    
+    # 多任务学习权重
+    task_weights:
+      classification: 1.0
+      captioning: 0.5
+      retrieval: 0.3
+
+# 图神经网络训练配置
+graph_neural_networks:
+  # 通用GNN配置
+  general:
+    epochs: 200
+    batch_size: 32
+    learning_rate: 0.01
+    weight_decay: 5e-4
+    
+    # 图采样
+    sampling:
+      enabled: true
+      num_neighbors: [25, 10]  # 多层采样邻居数
+      batch_size: 1024
+    
+    # 图增强
+    graph_augmentation:
+      enabled: true
+      edge_dropout: 0.1
+      node_dropout: 0.1
+      feature_dropout: 0.1
+  
+  # GAT特定配置
+  gat:
+    attention_dropout: 0.6
+    num_heads: 8
+    concat_heads: true
+    
+  # GraphSAGE特定配置
+  graphsage:
+    aggregator: "mean"  # mean, max, lstm, pool
+    normalize: true
+
+# 大语言模型训练配置
+large_language_models:
+  # 通用LLM配置
+  general:
+    epochs: 3
+    batch_size: 8
+    gradient_accumulation_steps: 4
+    learning_rate: 1e-4
+    warmup_ratio: 0.03
+    
+    # 生成配置
+    generation:
+      max_new_tokens: 256
+      do_sample: true
+      temperature: 0.7
+      top_p: 0.9
+      top_k: 50
+      repetition_penalty: 1.1
+    
+    # 内存优化
+    memory_optimization:
+      gradient_checkpointing: true
+      use_8bit: false
+      use_4bit: false
+      deepspeed_stage: 2
+  
+  # ChatGLM配置
+  chatglm:
+    epochs: 5
+    batch_size: 4
+    learning_rate: 5e-5
+    
+    # P-Tuning v2
+    ptuning_v2:
+      enabled: true
+      pre_seq_len: 128
+      prefix_projection: false
+    
+    # LoRA微调
+    lora:
+      enabled: false
+      r: 8
+      lora_alpha: 32
+      lora_dropout: 0.1
+
+# 参数高效微调配置
+parameter_efficient_finetuning:
+  # LoRA配置
+  lora:
+    r: 16
+    lora_alpha: 32
+    lora_dropout: 0.1
+    target_modules: ["q_proj", "v_proj", "k_proj", "o_proj"]
+    bias: "none"
+    task_type: "SEQ_CLS"
+    
+    # 动态LoRA
+    dynamic_lora:
+      enabled: false
+      target_rank: 64
+      warmup_steps: 1000
+  
+  # AdaLoRA配置
+  adalora:
+    init_r: 12
+    target_r: 8
+    beta1: 0.85
+    beta2: 0.85
+    tinit: 200
+    tfinal: 1000
+    deltaT: 10
+    
+  # Prefix Tuning配置
+  prefix_tuning:
+    num_virtual_tokens: 50
+    encoder_hidden_size: 768
+    prefix_projection: false
+
+# 分布式训练配置
+distributed_training:
+  # 数据并行
+  data_parallel:
+    enabled: false
+    backend: "nccl"
+    find_unused_parameters: false
+    
+  # 模型并行
+  model_parallel:
+    enabled: false
+    tensor_parallel_size: 1
+    pipeline_parallel_size: 1
+    
+  # DeepSpeed配置
+  deepspeed:
+    enabled: false
+    stage: 2
+    offload_optimizer: false
+    offload_param: false
+    zero_force_ds_cpu_optimizer: false
+    
+    # 配置文件路径
+    config_file: "config/deepspeed_config.json"
+
+# 实验跟踪配置
+experiment_tracking:
+  # Weights & Biases
+  wandb:
+    enabled: true
+    project: "mr2-rumor-detection"
+    entity: "ipanzhzh"
+    tags: ["multimodal", "rumor-detection"]
+    group: "baseline"
+    name: null  # 自动生成
+    
+    # 记录配置
+    log_model: true
+    log_code: true
+    log_graph: false
+    
+  # TensorBoard
+  tensorboard:
+    enabled: true
+    log_dir: "outputs/tensorboard"
+    log_graph: true
+    log_images: true
+    
+  # MLflow
+  mlflow:
+    enabled: false
+    experiment_name: "MR2_Experiments"
+    tracking_uri: "file:./outputs/mlruns"
+
+# 评估配置
+evaluation:
+  # 评估指标
+  metrics: ["accuracy", "precision", "recall", "f1", "auc"]
+  average: "macro"  # micro, macro, weighted
+  
+  # 验证频率
+  eval_strategy: "steps"  # steps, epoch
+  eval_steps: 100
+  save_steps: 500
+  
+  # 测试时增强
+  test_time_augmentation:
+    enabled: false
+    num_augmentations: 5
+    aggregation: "mean"  # mean, max, vote
+
+# 调试和开发配置
+debug:
+  # 快速运行模式
+  fast_dev_run: false
+  max_train_samples: null
+  max_eval_samples: null
+  
+  # 过拟合测试
+  overfit_batches: 0
+  
+  # 检查点恢复
+  resume_from_checkpoint: null
+  
+  # 日志级别
+  log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_on_each_node: true
+
+# 硬件配置
+hardware:
+  # GPU配置
+  gpu:
+    use_gpu: true
+    gpu_ids: [0]
+    mixed_precision: "fp16"  # fp16, bf16, fp32
+    
+  # CPU配置
+  cpu:
+    num_workers: 4
+    num_threads: null  # 自动检测
+    
+  # 内存配置
+  memory:
+    max_memory_gb: null  # 自动检测
+    pin_memory: true
+    persistent_workers: true
+
+# 可复现性配置
+reproducibility:
+  seed: 42
+  deterministic: true
+  benchmark: false
+  use_deterministic_algorithms: false

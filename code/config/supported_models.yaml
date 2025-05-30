@@ -1,0 +1,442 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# Author: ipanzhzh
+# config/supported_models.yaml
+
+# 支持的模型列表配置
+# 定义项目中可用的所有模型及其基本信息
+
+# 传统机器学习模型
+traditional_models:
+  classification:
+    - name: "SVM"
+      implementation: "sklearn"
+      class_path: "models.traditional.ml_classifiers.SVMClassifier"
+      description: "支持向量机分类器"
+      supported_tasks: ["binary", "multiclass"]
+      features_required: ["text_features"]
+      
+    - name: "RandomForest"
+      implementation: "sklearn"
+      class_path: "models.traditional.ml_classifiers.RandomForestClassifier"
+      description: "随机森林分类器"
+      supported_tasks: ["binary", "multiclass"]
+      features_required: ["text_features"]
+      
+    - name: "NaiveBayes"
+      implementation: "sklearn"
+      class_path: "models.traditional.ml_classifiers.NaiveBayesClassifier"
+      description: "朴素贝叶斯分类器"
+      supported_tasks: ["binary", "multiclass"]
+      features_required: ["text_features"]
+      
+    - name: "LogisticRegression"
+      implementation: "sklearn"
+      class_path: "models.traditional.ml_classifiers.LogisticRegressionClassifier"
+      description: "逻辑回归分类器"
+      supported_tasks: ["binary", "multiclass"]
+      features_required: ["text_features"]
+      
+    - name: "XGBoost"
+      implementation: "xgboost"
+      class_path: "models.traditional.ml_classifiers.XGBoostClassifier"
+      description: "极端梯度提升分类器"
+      supported_tasks: ["binary", "multiclass"]
+      features_required: ["text_features"]
+
+# 神经网络基础模型
+neural_network_models:
+  text_models:
+    - name: "TextCNN"
+      implementation: "pytorch"
+      class_path: "models.neural_networks.cnn_models.TextCNN"
+      description: "文本卷积神经网络"
+      supported_tasks: ["classification"]
+      input_types: ["text"]
+      
+    - name: "BiLSTM"
+      implementation: "pytorch"
+      class_path: "models.neural_networks.rnn_models.BiLSTM"
+      description: "双向长短期记忆网络"
+      supported_tasks: ["classification", "sequence_labeling"]
+      input_types: ["text"]
+      
+    - name: "TextRCNN"
+      implementation: "pytorch"
+      class_path: "models.neural_networks.hybrid_models.TextRCNN"
+      description: "文本循环卷积神经网络"
+      supported_tasks: ["classification"]
+      input_types: ["text"]
+      
+    - name: "HierarchicalAttention"
+      implementation: "pytorch"
+      class_path: "models.neural_networks.attention_models.HierarchicalAttentionNetwork"
+      description: "层次注意力网络"
+      supported_tasks: ["classification"]
+      input_types: ["text"]
+      
+  image_models:
+    - name: "ImageCNN"
+      implementation: "pytorch"
+      class_path: "models.neural_networks.cnn_models.ImageCNN"
+      description: "图像卷积神经网络"
+      supported_tasks: ["classification"]
+      input_types: ["image"]
+      
+    - name: "ResNet"
+      implementation: "pytorch"
+      class_path: "models.neural_networks.cnn_models.ResNetClassifier"
+      description: "残差网络"
+      supported_tasks: ["classification"]
+      input_types: ["image"]
+      variants: ["resnet18", "resnet34", "resnet50", "resnet101"]
+
+# 预训练模型
+pretrained_models:
+  text_encoders:
+    english:
+      - name: "BERT"
+        model_id: "bert-base-uncased"
+        implementation: "transformers"
+        class_path: "models.pretrained.encoder_models.BERTClassifier"
+        description: "双向编码器表示"
+        supported_tasks: ["classification", "token_classification"]
+        max_length: 512
+        
+      - name: "RoBERTa"
+        model_id: "roberta-base"
+        implementation: "transformers"
+        class_path: "models.pretrained.encoder_models.RoBERTaClassifier"
+        description: "鲁棒优化BERT预训练方法"
+        supported_tasks: ["classification", "token_classification"]
+        max_length: 512
+        
+      - name: "ALBERT"
+        model_id: "albert-base-v2"
+        implementation: "transformers"
+        class_path: "models.pretrained.encoder_models.ALBERTClassifier"
+        description: "轻量级BERT"
+        supported_tasks: ["classification", "token_classification"]
+        max_length: 512
+        
+      - name: "ELECTRA"
+        model_id: "google/electra-base-discriminator"
+        implementation: "transformers"
+        class_path: "models.pretrained.encoder_models.ELECTRAClassifier"
+        description: "高效预训练文本编码器"
+        supported_tasks: ["classification", "token_classification"]
+        max_length: 512
+        
+      - name: "DeBERTa"
+        model_id: "microsoft/deberta-base"
+        implementation: "transformers"
+        class_path: "models.pretrained.encoder_models.DeBERTaClassifier"
+        description: "解耦注意力BERT"
+        supported_tasks: ["classification", "token_classification"]
+        max_length: 512
+        
+    chinese:
+      - name: "Chinese-BERT-wwm"
+        model_id: "hfl/chinese-bert-wwm-ext"
+        implementation: "transformers"
+        class_path: "models.pretrained.chinese_models.ChineseBERTClassifier"
+        description: "中文全词遮盖BERT"
+        supported_tasks: ["classification", "token_classification"]
+        max_length: 512
+        
+      - name: "Chinese-RoBERTa-wwm"
+        model_id: "hfl/chinese-roberta-wwm-ext"
+        implementation: "transformers"
+        class_path: "models.pretrained.chinese_models.ChineseRoBERTaClassifier"
+        description: "中文全词遮盖RoBERTa"
+        supported_tasks: ["classification", "token_classification"]
+        max_length: 512
+        
+      - name: "MacBERT"
+        model_id: "hfl/chinese-macbert-base"
+        implementation: "transformers"
+        class_path: "models.pretrained.chinese_models.MacBERTClassifier"
+        description: "改进的中文BERT"
+        supported_tasks: ["classification", "token_classification"]
+        max_length: 512
+        
+      - name: "ERNIE"
+        model_id: "nghuyong/ernie-1.0-base-zh"
+        implementation: "transformers"
+        class_path: "models.pretrained.chinese_models.ERNIEClassifier"
+        description: "知识增强表示模型"
+        supported_tasks: ["classification", "token_classification"]
+        max_length: 512
+        
+    multilingual:
+      - name: "mBERT"
+        model_id: "bert-base-multilingual-cased"
+        implementation: "transformers"
+        class_path: "models.pretrained.multilingual_models.MultiBERTClassifier"
+        description: "多语言BERT"
+        supported_tasks: ["classification", "token_classification"]
+        max_length: 512
+        supported_languages: ["zh", "en", "fr", "de", "es", "ja", "ko"]
+        
+      - name: "XLM-RoBERTa"
+        model_id: "xlm-roberta-base"
+        implementation: "transformers"
+        class_path: "models.pretrained.multilingual_models.XLMRoBERTaClassifier"
+        description: "跨语言RoBERTa"
+        supported_tasks: ["classification", "token_classification"]
+        max_length: 512
+        supported_languages: ["zh", "en", "fr", "de", "es", "ja", "ko"]
+
+  generative_models:
+    - name: "GPT-2"
+      model_id: "gpt2"
+      implementation: "transformers"
+      class_path: "models.pretrained.decoder_models.GPT2Generator"
+      description: "生成式预训练Transformer 2"
+      supported_tasks: ["text_generation", "classification"]
+      max_length: 1024
+      
+    - name: "T5"
+      model_id: "t5-base"
+      implementation: "transformers"
+      class_path: "models.pretrained.encoder_decoder_models.T5Classifier"
+      description: "文本到文本传输Transformer"
+      supported_tasks: ["text_generation", "classification", "summarization"]
+      max_length: 512
+      
+    - name: "BART"
+      model_id: "facebook/bart-base"
+      implementation: "transformers"
+      class_path: "models.pretrained.encoder_decoder_models.BARTClassifier"
+      description: "去噪自编码器"
+      supported_tasks: ["text_generation", "classification", "summarization"]
+      max_length: 1024
+
+# 多模态模型
+multimodal_models:
+  vision_language:
+    - name: "CLIP"
+      model_id: "openai/clip-vit-base-patch32"
+      implementation: "transformers"
+      class_path: "models.multimodal.vision_language_models.CLIPClassifier"
+      description: "对比语言图像预训练"
+      supported_tasks: ["multimodal_classification", "retrieval"]
+      input_types: ["text", "image"]
+      max_text_length: 77
+      image_size: [224, 224]
+      
+    - name: "Chinese-CLIP"
+      model_id: "OFA-Sys/chinese-clip-vit-base-patch16"
+      implementation: "transformers"
+      class_path: "models.multimodal.chinese_multimodal.ChineseCLIPClassifier"
+      description: "中文CLIP模型"
+      supported_tasks: ["multimodal_classification", "retrieval"]
+      input_types: ["text", "image"]
+      max_text_length: 77
+      image_size: [224, 224]
+      
+    - name: "BLIP"
+      model_id: "Salesforce/blip-image-captioning-base"
+      implementation: "transformers"
+      class_path: "models.multimodal.vision_language_models.BLIPClassifier"
+      description: "自举语言图像预训练"
+      supported_tasks: ["multimodal_classification", "captioning"]
+      input_types: ["text", "image"]
+      image_size: [384, 384]
+      
+    - name: "ALBEF"
+      model_id: "microsoft/albef-base"
+      implementation: "transformers"
+      class_path: "models.multimodal.vision_language_models.ALBEFClassifier"
+      description: "对齐BERT和特征"
+      supported_tasks: ["multimodal_classification", "retrieval"]
+      input_types: ["text", "image"]
+      image_size: [384, 384]
+      
+    - name: "FLAVA"
+      model_id: "facebook/flava-full"
+      implementation: "transformers"
+      class_path: "models.multimodal.vision_language_models.FLAVAClassifier"
+      description: "基础语言视觉对齐"
+      supported_tasks: ["multimodal_classification"]
+      input_types: ["text", "image"]
+      image_size: [224, 224]
+
+# 图神经网络模型
+graph_models:
+  basic_gnns:
+    - name: "GCN"
+      implementation: "torch_geometric"
+      class_path: "models.graph_neural_networks.basic_gnn_layers.GCNClassifier"
+      description: "图卷积网络"
+      supported_tasks: ["node_classification", "graph_classification"]
+      
+    - name: "GAT"
+      implementation: "torch_geometric"
+      class_path: "models.graph_neural_networks.basic_gnn_layers.GATClassifier"
+      description: "图注意力网络"
+      supported_tasks: ["node_classification", "graph_classification"]
+      
+    - name: "GraphSAGE"
+      implementation: "torch_geometric"
+      class_path: "models.graph_neural_networks.basic_gnn_layers.GraphSAGEClassifier"
+      description: "图采样聚合"
+      supported_tasks: ["node_classification", "graph_classification"]
+      
+    - name: "GIN"
+      implementation: "torch_geometric"
+      class_path: "models.graph_neural_networks.basic_gnn_layers.GINClassifier"
+      description: "图同构网络"
+      supported_tasks: ["graph_classification"]
+      
+  advanced_gnns:
+    - name: "GraphTransformer"
+      implementation: "torch_geometric"
+      class_path: "models.graph_neural_networks.advanced_gnn_models.GraphTransformerClassifier"
+      description: "图Transformer"
+      supported_tasks: ["node_classification", "graph_classification"]
+      
+    - name: "GraphBERT"
+      implementation: "pytorch"
+      class_path: "models.graph_neural_networks.advanced_gnn_models.GraphBERTClassifier"
+      description: "图BERT"
+      supported_tasks: ["node_classification", "graph_classification"]
+
+# 大语言模型
+large_language_models:
+  open_source:
+    - name: "ChatGLM2-6B"
+      model_id: "THUDM/chatglm2-6b"
+      implementation: "transformers"
+      class_path: "models.llms.open_source_llms.ChatGLM2Classifier"
+      description: "对话生成语言模型 2代"
+      supported_tasks: ["chat", "classification"]
+      max_length: 32768
+      model_size: "6B"
+      
+    - name: "Qwen-7B-Chat"
+      model_id: "Qwen/Qwen-7B-Chat"
+      implementation: "transformers"
+      class_path: "models.llms.open_source_llms.QwenChatClassifier"
+      description: "通义千问对话模型"
+      supported_tasks: ["chat", "classification"]
+      max_length: 8192
+      model_size: "7B"
+      
+    - name: "Baichuan2-7B-Chat"
+      model_id: "baichuan-inc/Baichuan2-7B-Chat"
+      implementation: "transformers"
+      class_path: "models.llms.open_source_llms.BaichuanChatClassifier"
+      description: "百川2代对话模型"
+      supported_tasks: ["chat", "classification"]
+      max_length: 4096
+      model_size: "7B"
+      
+  multimodal_llms:
+    - name: "LLaVA"
+      model_id: "llava-hf/llava-1.5-7b-hf"
+      implementation: "transformers"
+      class_path: "models.llms.multimodal_llms.LLaVAClassifier"
+      description: "大语言视觉助手"
+      supported_tasks: ["multimodal_chat", "vqa"]
+      input_types: ["text", "image"]
+      max_length: 2048
+      model_size: "7B"
+      
+    - name: "BLIP-2"
+      model_id: "Salesforce/blip2-opt-2.7b"
+      implementation: "transformers"
+      class_path: "models.llms.multimodal_llms.BLIP2Classifier"
+      description: "自举语言图像预训练 2代"
+      supported_tasks: ["multimodal_chat", "captioning"]
+      input_types: ["text", "image"]
+      model_size: "2.7B"
+
+# 特殊任务模型
+specialized_models:
+  rumor_detection:
+    - name: "RumorDetectionTransformer"
+      implementation: "pytorch"
+      class_path: "models.specialized.rumor_models.RumorDetectionTransformer"
+      description: "专门的谣言检测Transformer"
+      supported_tasks: ["rumor_classification"]
+      input_types: ["text", "image", "metadata"]
+      
+    - name: "SocialMediaBERT"
+      implementation: "pytorch"
+      class_path: "models.specialized.social_media_models.SocialMediaBERT"
+      description: "社交媒体优化BERT"
+      supported_tasks: ["rumor_classification", "sentiment_analysis"]
+      input_types: ["text"]
+
+# 集成模型
+ensemble_models:
+  - name: "VotingClassifier"
+    implementation: "sklearn"
+    class_path: "models.traditional.ensemble_methods.VotingClassifier"
+    description: "投票集成分类器"
+    supported_base_models: ["traditional", "neural"]
+    
+  - name: "StackingClassifier"
+    implementation: "sklearn"
+    class_path: "models.traditional.ensemble_methods.StackingClassifier"
+    description: "堆叠集成分类器"
+    supported_base_models: ["traditional", "neural", "pretrained"]
+    
+  - name: "MultiModalEnsemble"
+    implementation: "pytorch"
+    class_path: "models.multimodal.ensemble_models.MultiModalEnsemble"
+    description: "多模态集成模型"
+    supported_base_models: ["text_models", "image_models", "multimodal"]
+
+# 模型兼容性矩阵
+compatibility_matrix:
+  tasks:
+    classification: ["traditional", "neural", "pretrained", "multimodal", "graph", "llm"]
+    regression: ["traditional", "neural"]
+    generation: ["generative", "llm"]
+    retrieval: ["multimodal", "llm"]
+    
+  input_types:
+    text_only: ["traditional", "neural.text_models", "pretrained.text_encoders"]
+    image_only: ["neural.image_models"]
+    multimodal: ["multimodal", "llm.multimodal_llms"]
+    graph: ["graph_models"]
+    
+  languages:
+    english: ["english", "multilingual"]
+    chinese: ["chinese", "multilingual"]
+    mixed: ["multilingual", "chinese"]
+
+# 推荐模型配置
+recommended_models:
+  beginner:
+    text_classification: ["LogisticRegression", "BERT"]
+    multimodal_classification: ["CLIP"]
+    
+  intermediate:
+    text_classification: ["RoBERTa", "Chinese-BERT-wwm", "TextRCNN"]
+    multimodal_classification: ["BLIP", "Chinese-CLIP"]
+    graph_classification: ["GAT", "GraphSAGE"]
+    
+  advanced:
+    text_classification: ["DeBERTa", "ChatGLM2-6B"]
+    multimodal_classification: ["LLaVA", "FLAVA"]
+    graph_classification: ["GraphTransformer"]
+    ensemble: ["StackingClassifier", "MultiModalEnsemble"]
+
+# 性能基准 (在MR2数据集上的预期性能)
+performance_benchmarks:
+  traditional:
+    SVM: {accuracy: 0.65, f1: 0.62}
+    RandomForest: {accuracy: 0.68, f1: 0.65}
+    
+  pretrained:
+    BERT: {accuracy: 0.78, f1: 0.75}
+    RoBERTa: {accuracy: 0.79, f1: 0.76}
+    Chinese-BERT-wwm: {accuracy: 0.80, f1: 0.77}
+    
+  multimodal:
+    CLIP: {accuracy: 0.82, f1: 0.79}
+    BLIP: {accuracy: 0.84, f1: 0.81}
+    Chinese-CLIP: {accuracy: 0.83, f1: 0.80}
