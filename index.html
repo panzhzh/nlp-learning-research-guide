@@ -2,37 +2,36 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>自然语言处理研究生学习指导</title>
+  <title>自然语言处理学习指导</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- 如果你的站点部署在子目录下，别忘了加这一行：
-  <meta name="docsify-base-path" content="/nlp-learning-research-guide/"> -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
-  <link rel="icon" href="https://docsify.js.org/_media/favicon.ico" type="image/x-icon">
 </head>
 <body>
   <div id="app"></div>
 
   <script>
     window.$docsify = {
-      name: 'NLP 研究生学习指导',
+      name: 'NLP 学习指导',
       repo: 'https://github.com/panzhzh/nlp-learning-research-guide',
-      // ▼ 开启自动侧边栏
+      
+      // 设置文档根目录
+      basePath: '/docs/',
+      homepage: 'README.md',
+      
+      // 使用自动侧边栏
       autoSidebar: true,
-      // ▼ Sub 目录最大展示层级 3
       subMaxLevel: 3,
-      // ▼ 整体目录最多展示层级 3（可选）
       maxLevel: 3,
 
-      auto2top: true,  // 每次导航后自动滚到顶部
+      auto2top: true,
 
-      // 搜索配置
       search: {
         placeholder: '搜索',
         noData: '没有结果',
         depth: 3
       },
 
-      // 复制代码按钮
       copyCode: {
         buttonText: '复制',
         errorText: '错误',
@@ -41,13 +40,9 @@
     };
   </script>
 
-  <!-- Docsify 核心脚本 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
-  <!-- 搜索插件（要和 core 同版本） -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
-  <!-- 复制代码插件 -->
   <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2/dist/docsify-copy-code.min.js"></script>
-  <!-- 自动侧边栏插件 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify-auto-sidebar@0.3.5/docsify-auto-sidebar.min.js"></script>
+  <script src="//unpkg.com/docsify-auto-sidebar@0.3.5/docsify-auto-sidebar.min.js"></script>
 </body>
 </html>
