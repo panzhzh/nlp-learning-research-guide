@@ -1,6 +1,6 @@
 <!-- _sidebar.md -->
 
-* [🏠 **返回首页**](/)
+* [🏠 首页](/)
 
 * **📚 基础篇**
   * [第1章 论文与学术出版基础](chapter1-academic-publishing-basics.md)
@@ -56,6 +56,6 @@
 ---
 
 * **🔗 快速链接**
-  * [⭐ GitHub仓库](https://github.com/panzhzh/nlp-learning-research-guide)
-  * [📧 问题反馈](https://github.com/panzhzh/nlp-learning-research-guide/issues)
-  * [🤝 贡献指南](https://github.com/panzhzh/nlp-learning-research-guide#-贡献指南)
+  * [⭐ GitHub仓库](https://github.com/your-username/nlp-learning-research-guide)
+  * [📧 问题反馈](https://github.com/your-username/nlp-learning-research-guide/issues)
+  * [🤝 贡献指南](https://github.com/your-username/nlp-learning-research-guide#-贡献指南)
