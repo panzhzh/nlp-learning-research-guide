@@ -4,19 +4,15 @@
   <meta charset="UTF-8">
   <title>自然语言处理研究生学习指导</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- 如果你不想写下面的 basePath，也可以用这行 meta -->
-  <meta name="docsify-base-path" content="/nlp-learning-research-guide/">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
 </head>
 <body>
   <div id="app"></div>
-
   <script>
     window.$docsify = {
       name: 'NLP 研究生学习指导',
       repo: 'https://github.com/panzhzh/nlp-learning-research-guide',
-      basePath: '/nlp-learning-research-guide/',
-      loadSidebar: true,
+      loadSidebar: true,  // 使用手动侧边栏
       subMaxLevel: 2,
       search: 'auto',
       copyCode: {
@@ -26,10 +22,8 @@
       }
     };
   </script>
-
-  <!-- 主脚本：一定要引用 .min.js -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
-  <!-- 自动侧边栏插件 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify-auto-sidebar@0.3.5/docsify-auto-sidebar.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
 </body>
 </html>
