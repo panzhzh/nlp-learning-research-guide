@@ -12,13 +12,23 @@
     window.$docsify = {
       name: 'NLP 研究生学习指导',
       repo: 'https://github.com/panzhzh/nlp-learning-research-guide',
-      loadSidebar: true,  // 改为 true，不是 False
+      loadSidebar: true,
+      loadSidebar: '_sidebar.md',  // 明确指定 sidebar 文件
       subMaxLevel: 3,
-      search: 'auto',
+      maxLevel: 4,
+      auto2top: true,
+      search: {
+        placeholder: '搜索',
+        noData: '没有结果',
+        depth: 3
+      },
       copyCode: {
         buttonText: '复制',
-        errorText: '错误',
+        errorText: '错误', 
         successText: '已复制'
+      },
+      alias: {
+        '/.*/_sidebar.md': '/_sidebar.md'  // 确保所有路径都使用根目录的 sidebar
       }
     };
   </script>
