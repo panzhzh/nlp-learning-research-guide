@@ -15,29 +15,11 @@
 
 ### [第1章 论文与学术出版基础](./chapter1-academic-publishing-basics.md)
 - 1.1 期刊论文与会议论文概念
-  - 1.1.1 期刊论文的特点与发表流程
-  - 1.1.2 会议论文的特点与发表流程
-  - 1.1.3 两者在各学科中的相对地位
 - 1.2 期刊分级体系
-  - 1.2.1 JCR分区与影响因子 (Impact Factor, IF)
-  - 1.2.2 中科院期刊分区 (CAS — Q1 ~ Q4)
-  - 1.2.3 CiteScore、SNIP、SJR等补充指标
 - 1.3 会议分级体系
-  - 1.3.1 CCF推荐列表简介
-  - 1.3.2 A/B/C三档含义与评估标准
-  - 1.3.3 NLP领域核心会议 (ACL, EMNLP, NAACL, COLING, etc.)
 - 1.4 主流学术出版社与官网导航
-  - 1.4.1 知名商业出版社 (Elsevier, Springer Nature, Wiley, etc.)
-  - 1.4.2 专业学会出版机构 (IEEE, ACM, ACL)
-  - 1.4.3 开放获取平台与预印本服务器
 - 1.5 需要警惕的出版社与期刊（掠夺性期刊/"水刊"）
-  - 1.5.1 什么是掠夺性期刊？其危害是什么？
-  - 1.5.2 识别掠夺性期刊的常见方法 (Beall's List等)
-  - 1.5.3 关于MDPI, Frontiers, Hindawi等出版社的客观讨论
 - 1.6 高效检索与评估文献
-  - 1.6.1 主要学术数据库 (Web of Science, Scopus, Google Scholar)
-  - 1.6.2 NLP专业平台 (ACL Anthology, Semantic Scholar, arXiv)
-  - 1.6.3 引文追踪、主题词检索与可视化分析
 
 ### [第2章 自然语言处理发展概览](./chapter2-nlp-overview.md)
 - 2.1 NLP发展历程
