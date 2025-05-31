@@ -4,8 +4,8 @@
 # datasets/mr2_dataset.py
 
 """
-简化的MR2数据集类
-专注于核心功能，易于理解和调试
+严格的MR2数据集类
+只支持真实数据集，不再提供演示数据fallback
 """
 
 import json
@@ -27,24 +27,25 @@ sys.path.append(str(code_root))
 
 # 导入配置管理
 try:
-    from utils.config_manager import get_data_config, get_data_dir, get_label_mapping
+    from utils.config_manager import get_data_config, get_data_dir, get_label_mapping, check_data_requirements
     USE_CONFIG = True
-except ImportError:
-    print("⚠️  配置管理器不可用，使用默认配置")
-    USE_CONFIG = False
+    print("✅ 成功导入配置管理器")
+except ImportError as e:
+    print(f"❌ 无法导入配置管理器: {e}")
+    raise ImportError("❌ 必须导入配置管理器才能继续")
 
 import logging
 logger = logging.getLogger(__name__)
 
 
-class SimpleMR2Dataset(Dataset):
+class MR2Dataset(Dataset):
     """
-    简化的MR2多模态谣言检测数据集
+    严格的MR2多模态谣言检测数据集
     
     功能:
-    - 加载文本和图像数据
-    - 基本的数据预处理
-    - 错误处理和调试信息
+    - 只加载真实数据集
+    - 找不到数据就报错
+    - 严格的数据验证
     """
     
     def __init__(self, 
@@ -62,6 +63,10 @@ class SimpleMR2Dataset(Dataset):
             transform_type: 图像变换类型 ('train', 'val')
             target_size: 目标图像尺寸
             load_images: 是否加载图像
+            
+        Raises:
+            FileNotFoundError: 数据文件不存在
+            ValueError: 数据格式错误或为空
         """
         self.data_dir = Path(data_dir)
         self.split = split
@@ -69,35 +74,38 @@ class SimpleMR2Dataset(Dataset):
         self.target_size = target_size
         self.load_images = load_images
         
+        # 验证数据要求
+        try:
+            check_data_requirements()
+        except Exception as e:
+            raise RuntimeError(f"❌ 数据要求检查失败: {e}")
+        
         # 加载配置
         self.setup_config()
         
         # 设置图像变换
         self.setup_transforms()
         
-        # 加载数据
+        # 加载数据集
         self.load_dataset()
         
-        print(f"📚 简化MR2数据集初始化完成")
+        # 验证数据集
+        self.validate_dataset()
+        
+        print(f"📚 MR2数据集初始化完成")
         print(f"   数据划分: {self.split}")
         print(f"   样本数量: {len(self.items)}")
         print(f"   加载图像: {self.load_images}")
-        if self.items:
-            print(f"   标签分布: {self.get_label_distribution()}")
+        print(f"   标签分布: {self.get_label_distribution()}")
     
     def setup_config(self):
         """设置配置"""
-        if USE_CONFIG:
-            try:
-                self.label_mapping = get_label_mapping()
-                data_config = get_data_config()
-                self.dataset_config = data_config.get('dataset', {})
-            except:
-                self.label_mapping = {0: 'Non-rumor', 1: 'Rumor', 2: 'Unverified'}
-                self.dataset_config = {}
-        else:
-            self.label_mapping = {0: 'Non-rumor', 1: 'Rumor', 2: 'Unverified'}
-            self.dataset_config = {}
+        try:
+            self.label_mapping = get_label_mapping()
+            data_config = get_data_config()
+            self.dataset_config = data_config.get('dataset', {})
+        except Exception as e:
+            raise RuntimeError(f"❌ 配置加载失败: {e}")
     
     def setup_transforms(self):
         """设置图像变换"""
@@ -105,7 +113,7 @@ class SimpleMR2Dataset(Dataset):
         if self.transform_type == 'train':
             self.image_transforms = transforms.Compose([
                 transforms.Resize(self.target_size),
-                transforms.RandomHorizontalFlip(p=0.3),  # 减少随机性
+                transforms.RandomHorizontalFlip(p=0.3),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], 
                                    std=[0.229, 0.224, 0.225])
@@ -121,40 +129,96 @@ class SimpleMR2Dataset(Dataset):
     
     def load_dataset(self):
         """加载数据集文件"""
-        # 加载主数据文件
+        # 构建数据文件路径
         dataset_file = self.data_dir / f'dataset_items_{self.split}.json'
         
+        # 检查文件是否存在
         if not dataset_file.exists():
-            print(f"❌ 数据集文件不存在: {dataset_file}")
-            print(f"   请确保文件路径正确")
-            print(f"   当前数据目录: {self.data_dir}")
-            
-            # 创建空数据集用于演示
-            self.items = []
-            self.item_ids = []
-            return
+            raise FileNotFoundError(
+                f"❌ 数据集文件不存在: {dataset_file}\n"
+                f"请确保MR2数据集已下载并解压到: {self.data_dir}\n"
+                f"下载链接: https://pan.baidu.com/s/1sfUwsaeV2nfl54OkrfrKVw?pwd=jxhc"
+            )
         
+        # 加载JSON文件
         try:
             with open(dataset_file, 'r', encoding='utf-8') as f:
                 self.raw_data = json.load(f)
             print(f"✅ 成功加载数据文件: {dataset_file}")
+        except json.JSONDecodeError as e:
+            raise ValueError(f"❌ JSON文件格式错误: {dataset_file}, 错误: {e}")
         except Exception as e:
-            print(f"❌ 加载数据文件失败: {e}")
-            self.items = []
-            self.item_ids = []
-            return
+            raise RuntimeError(f"❌ 加载数据文件失败: {dataset_file}, 错误: {e}")
         
         # 构建数据项列表
         self.items = []
         self.item_ids = []
         
+        # 验证数据格式并构建数据项
         for item_id, item_data in self.raw_data.items():
             # 验证必要字段
-            if 'caption' in item_data and 'label' in item_data:
-                self.items.append(item_data)
-                self.item_ids.append(item_id)
+            if not isinstance(item_data, dict):
+                logger.warning(f"跳过无效数据项 {item_id}: 不是字典格式")
+                continue
+                
+            if 'caption' not in item_data:
+                logger.warning(f"跳过数据项 {item_id}: 缺少caption字段")
+                continue
+                
+            if 'label' not in item_data:
+                logger.warning(f"跳过数据项 {item_id}: 缺少label字段")
+                continue
+            
+            # 验证标签值
+            label = item_data['label']
+            if not isinstance(label, int) or label not in self.label_mapping:
+                logger.warning(f"跳过数据项 {item_id}: 无效标签 {label}")
+                continue
+            
+            # 验证文本内容
+            caption = item_data['caption']
+            if not isinstance(caption, str) or len(caption.strip()) == 0:
+                logger.warning(f"跳过数据项 {item_id}: 无效文本内容")
+                continue
+            
+            # 添加有效数据项
+            self.items.append(item_data)
+            self.item_ids.append(item_id)
         
         print(f"📂 加载 {self.split} 数据: {len(self.items)} 个有效样本")
+    
+    def validate_dataset(self):
+        """验证数据集"""
+        # 检查数据集是否为空
+        if len(self.items) == 0:
+            raise ValueError(f"❌ {self.split} 数据集为空，无法继续")
+        
+        # 检查最小样本数要求
+        min_samples = self.dataset_config.get('requirements', {}).get('min_samples_per_split', 10)
+        if len(self.items) < min_samples:
+            raise ValueError(f"❌ {self.split} 数据集样本数不足: {len(self.items)} < {min_samples}")
+        
+        # 验证标签分布
+        label_counts = {}
+        for item in self.items:
+            label = item['label']
+            label_counts[label] = label_counts.get(label, 0) + 1
+        
+        # 检查是否包含所有标签类别
+        expected_labels = set(self.label_mapping.keys())
+        found_labels = set(label_counts.keys())
+        
+        if not found_labels.issubset(expected_labels):
+            invalid_labels = found_labels - expected_labels
+            raise ValueError(f"❌ 发现无效标签: {invalid_labels}")
+        
+        # 警告缺失的标签类别
+        missing_labels = expected_labels - found_labels
+        if missing_labels:
+            missing_names = [self.label_mapping[label] for label in missing_labels]
+            logger.warning(f"⚠️  {self.split} 数据集缺少标签类别: {missing_names}")
+        
+        print(f"✅ {self.split} 数据集验证通过")
     
     def __len__(self) -> int:
         """返回数据集大小"""
@@ -169,6 +233,9 @@ class SimpleMR2Dataset(Dataset):
             
         Returns:
             包含文本、图像、标签等信息的字典
+            
+        Raises:
+            IndexError: 索引超出范围
         """
         if idx >= len(self.items):
             raise IndexError(f"索引超出范围: {idx} >= {len(self.items)}")
@@ -180,6 +247,7 @@ class SimpleMR2Dataset(Dataset):
         data_item = {
             'item_id': item_id,
             'text': item.get('caption', ''),
+            'caption': item.get('caption', ''),  # 兼容性
             'label': item.get('label', -1),
             'language': item.get('language', 'unknown'),
             'text_length': len(item.get('caption', '')),
@@ -195,7 +263,7 @@ class SimpleMR2Dataset(Dataset):
             data_item.update({
                 'image': torch.zeros(3, *self.target_size),
                 'has_image': False,
-                'image_path': None
+                'image_path': item.get('image_path', None)
             })
         
         return data_item
@@ -322,78 +390,26 @@ class SimpleMR2Dataset(Dataset):
 
 
 # 兼容性别名
-MR2Dataset = SimpleMR2Dataset
-
-
-def create_demo_dataset(data_dir: str, split: str = 'train'):
-    """
-    创建演示数据集（当真实数据不可用时）
-    
-    Args:
-        data_dir: 数据目录
-        split: 数据划分
-    """
-    print(f"🔧 创建演示数据集: {split}")
-    
-    # 确保数据目录存在
-    data_path = Path(data_dir)
-    data_path.mkdir(parents=True, exist_ok=True)
-    
-    # 创建演示数据
-    demo_data = {}
-    texts = [
-        "这是一个谣言检测的演示文本",
-        "This is a demo text for rumor detection",
-        "混合语言的演示文本 mixed language demo",
-        "另一个中文演示样本",
-        "Another English demo sample"
-    ]
-    
-    for i in range(len(texts)):
-        demo_data[str(i)] = {
-            'caption': texts[i % len(texts)],
-            'label': i % 3,  # 0, 1, 2 循环
-            'language': 'mixed',
-            'image_path': f'{split}/img/{i}.jpg'
-        }
-    
-    # 保存到文件
-    demo_file = data_path / f'dataset_items_{split}.json'
-    with open(demo_file, 'w', encoding='utf-8') as f:
-        json.dump(demo_data, f, indent=2, ensure_ascii=False)
-    
-    print(f"✅ 演示数据集已创建: {demo_file}")
-    return demo_file
+SimpleMR2Dataset = MR2Dataset
 
 
 # 测试和演示代码
 def test_dataset():
     """测试数据集功能"""
-    print("📚 测试简化MR2数据集")
-    
-    # 设置数据目录
-    data_dir = "data"
+    print("📚 测试严格MR2数据集")
     
     try:
+        # 获取数据目录
+        data_dir = get_data_dir()
+        
         # 尝试创建数据集
         print(f"\n📂 尝试加载数据集...")
-        dataset = SimpleMR2Dataset(
+        dataset = MR2Dataset(
             data_dir=data_dir,
             split='train',
             transform_type='val',  # 使用验证模式，减少随机性
             load_images=True
         )
-        
-        if len(dataset) == 0:
-            print("❌ 数据集为空，创建演示数据...")
-            create_demo_dataset(data_dir, 'train')
-            
-            # 重新加载
-            dataset = SimpleMR2Dataset(
-                data_dir=data_dir,
-                split='train',
-                load_images=False  # 演示数据没有真实图像
-            )
         
         print(f"✅ 数据集创建成功，大小: {len(dataset)}")
         
@@ -420,21 +436,28 @@ def test_dataset():
         
     except Exception as e:
         print(f"❌ 测试失败: {e}")
-        return None
+        print("\n💡 解决方案:")
+        print("1. 确保MR2数据集已下载")
+        print("2. 检查数据文件路径是否正确")
+        print("3. 验证数据文件格式是否完整")
+        raise
 
 
 if __name__ == "__main__":
     # 运行测试
-    dataset = test_dataset()
-    
-    if dataset and len(dataset) > 0:
-        print(f"\n✅ 简化MR2数据集测试完成")
-        print(f"数据集可以正常使用，包含 {len(dataset)} 个样本")
-    else:
-        print(f"\n⚠️  数据集测试未完全成功")
-        print(f"请检查数据文件是否存在")
+    try:
+        dataset = test_dataset()
+        
+        if dataset and len(dataset) > 0:
+            print(f"\n✅ 严格MR2数据集测试完成")
+            print(f"数据集可以正常使用，包含 {len(dataset)} 个样本")
+        
+    except Exception as e:
+        print(f"\n❌ 数据集测试失败: {e}")
+        print("请确保MR2数据集已正确安装")
+        sys.exit(1)
     
     print(f"\n📝 使用说明:")
-    print(f"1. 确保数据文件存在于 data/ 目录下")
-    print(f"2. 如果没有真实数据，程序会自动创建演示数据")
-    print(f"3. 可以通过设置 load_images=False 来跳过图像加载")
+    print(f"1. 必须确保数据文件存在于正确路径")
+    print(f"2. 不再支持演示数据，必须使用真实数据集") 
+    print(f"3. 数据集会进行严格验证，确保数据质量")

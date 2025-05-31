@@ -4,22 +4,23 @@
 # code/utils/config_manager.py
 
 """
-简化的配置管理器
-专注于核心功能，易于理解和维护
+跨平台配置管理器
+自动检测项目路径，支持Linux和Windows
 """
 
 import os
 import yaml
 from typing import Dict, Any, Optional
 from pathlib import Path
+import platform
 
 
 class ConfigManager:
-    """简化的配置管理器"""
+    """跨平台配置管理器"""
     
     def __init__(self, config_dir: Optional[str] = None):
         """初始化配置管理器"""
-        # 智能检测项目结构
+        # 自动检测项目结构
         self.project_root, self.code_root = self._detect_project_structure()
         
         # 设置配置目录
@@ -28,6 +29,7 @@ class ConfigManager:
         else:
             self.config_dir = Path(config_dir)
             
+        print(f"🔧 运行环境: {platform.system()}")
         print(f"🔧 Project root: {self.project_root}")
         print(f"🔧 Code root: {self.code_root}")
         print(f"🔧 Config dir: {self.config_dir}")
@@ -35,45 +37,112 @@ class ConfigManager:
         # 加载配置
         self.configs = {}
         self._load_all_configs()
+        
+        # 验证数据目录
+        self._validate_data_directory()
     
     def _detect_project_structure(self) -> tuple[Path, Path]:
-        """智能检测项目结构"""
+        """
+        跨平台智能检测项目结构
+        支持从任何位置运行
+        """
         # 获取当前文件所在目录
         current_file = Path(__file__).resolve()
         current_dir = current_file.parent
         
-        # 情况1: 当前在 code/utils/ 下
+        # 情况1: 当前在 code/utils/ 下 (标准情况)
         if current_dir.name == "utils" and current_dir.parent.name == "code":
             code_root = current_dir.parent
             project_root = code_root.parent
             return project_root, code_root
         
-        # 情况2: 从其他位置运行，查找code目录
+        # 情况2: 从其他位置运行，向上查找项目根目录
         search_dir = Path.cwd()
-        for _ in range(5):  # 最多向上查找5层
+        max_depth = 10  # 最多向上查找10层，防止无限循环
+        
+        for _ in range(max_depth):
+            # 检查是否包含code目录
             code_candidate = search_dir / "code"
             if code_candidate.exists() and code_candidate.is_dir():
-                # 检查是否有预期的子目录
-                expected_dirs = ["config", "utils", "datasets"]
-                if any((code_candidate / d).exists() for d in expected_dirs):
+                # 验证是否是我们要的项目结构
+                expected_dirs = ["config", "utils", "datasets", "models"]
+                found_dirs = sum(1 for d in expected_dirs if (code_candidate / d).exists())
+                
+                if found_dirs >= 3:  # 至少包含3个预期目录
                     return search_dir, code_candidate
+            
+            # 检查当前目录是否直接是code目录
+            expected_dirs = ["config", "utils", "datasets", "models"]
+            found_dirs = sum(1 for d in expected_dirs if (search_dir / d).exists())
+            if found_dirs >= 3:
+                return search_dir.parent, search_dir
             
             parent = search_dir.parent
             if parent == search_dir:  # 已到根目录
                 break
             search_dir = parent
         
-        # 情况3: 默认假设当前目录就是项目根目录
-        project_root = Path.cwd()
-        code_root = project_root / "code"
-        return project_root, code_root
+        # 情况3: 使用当前工作目录作为fallback
+        cwd = Path.cwd()
+        
+        # 检查cwd是否包含code目录
+        if (cwd / "code").exists():
+            return cwd, cwd / "code"
+        
+        # 检查cwd的父目录是否包含code
+        if (cwd.parent / "code").exists():
+            return cwd.parent, cwd.parent / "code"
+        
+        # 最后fallback：假设当前目录就是code目录
+        return cwd.parent if cwd.name == "code" else cwd, cwd if cwd.name == "code" else cwd / "code"
+    
+    def _validate_data_directory(self):
+        """验证数据目录是否存在"""
+        data_dir = self.get_data_dir()
+        
+        if not data_dir.exists():
+            raise FileNotFoundError(
+                f"❌ 数据目录不存在: {data_dir}\n"
+                f"请确保MR2数据集已下载并解压到正确位置。\n"
+                f"期望的数据目录结构:\n"
+                f"{data_dir}/\n"
+                f"├── dataset_items_train.json\n"
+                f"├── dataset_items_val.json\n"
+                f"├── dataset_items_test.json\n"
+                f"└── train/\n"
+                f"    └── img/\n"
+                f"下载链接: https://pan.baidu.com/s/1sfUwsaeV2nfl54OkrfrKVw?pwd=jxhc"
+            )
+        
+        # 检查必要的数据文件
+        required_files = [
+            "dataset_items_train.json",
+            "dataset_items_val.json", 
+            "dataset_items_test.json"
+        ]
+        
+        missing_files = []
+        for file_name in required_files:
+            file_path = data_dir / file_name
+            if not file_path.exists():
+                missing_files.append(file_name)
+        
+        if missing_files:
+            raise FileNotFoundError(
+                f"❌ 缺少必要的数据文件: {missing_files}\n"
+                f"数据目录: {data_dir}\n"
+                f"请确保所有数据文件都已正确解压到数据目录中。"
+            )
+        
+        print(f"✅ 数据目录验证通过: {data_dir}")
     
     def _load_all_configs(self):
         """加载所有配置文件"""
         config_files = {
             'data': 'data_configs.yaml',
             'training': 'training_configs.yaml',
-            'supported_models': 'supported_models.yaml'
+            'supported_models': 'supported_models.yaml',
+            'model': 'model_configs.yaml'  # 新增模型配置
         }
         
         for config_name, filename in config_files.items():
@@ -99,8 +168,12 @@ class ConfigManager:
         return self.get_config('data')
     
     def get_training_config(self) -> Dict[str, Any]:
-        """获取训练配置 - 修复缺失的函数"""
+        """获取训练配置"""
         return self.get_config('training')
+    
+    def get_model_config(self) -> Dict[str, Any]:
+        """获取模型配置"""
+        return self.get_config('model')
     
     def get_label_mapping(self) -> Dict[int, str]:
         """获取标签映射"""
@@ -124,24 +197,39 @@ class ConfigManager:
         })
     
     def get_data_dir(self) -> Path:
-        """获取数据目录路径"""
-        # 首先检查配置文件中的设置
+        """
+        获取数据目录路径 - 动态检测
+        """
         data_config = self.get_data_config()
         dataset_paths = data_config.get('dataset', {}).get('paths', {})
-        base_dir = dataset_paths.get('base_dir', 'data')
+        base_dir = dataset_paths.get('base_dir', 'auto_detect')
         
-        # 转换为绝对路径
-        if not os.path.isabs(base_dir):
-            data_dir = self.code_root / base_dir
+        if base_dir == 'auto_detect':
+            # 自动检测数据目录
+            possible_data_dirs = [
+                self.code_root / 'data',           # code/data/
+                self.project_root / 'data',        # project_root/data/
+                self.code_root.parent / 'data',    # 与code同级的data/
+            ]
+            
+            for data_dir in possible_data_dirs:
+                if data_dir.exists():
+                    print(f"🔍 找到数据目录: {data_dir}")
+                    return data_dir
+            
+            # 如果都不存在，返回默认路径 (会在验证时报错)
+            return self.code_root / 'data'
         else:
-            data_dir = Path(base_dir)
-        
-        return data_dir
+            # 使用配置中指定的路径
+            if os.path.isabs(base_dir):
+                return Path(base_dir)
+            else:
+                return self.code_root / base_dir
     
     def get_output_path(self, module: str, subdir: str) -> Path:
         """获取输出路径并自动创建目录"""
         output_dir = self.code_root / 'outputs' / module / subdir
-        output_dir.mkdir(parents=True, exist_ok=True)  # 自动创建目录
+        output_dir.mkdir(parents=True, exist_ok=True)
         return output_dir
     
     def create_output_directories(self):
@@ -163,6 +251,47 @@ class ConfigManager:
         
         print(f"✅ 创建输出目录: {created_count} 个")
         return created_count
+    
+    def check_data_requirements(self) -> bool:
+        """检查数据要求是否满足"""
+        data_config = self.get_data_config()
+        requirements = data_config.get('dataset', {}).get('requirements', {})
+        
+        enforce_real_data = requirements.get('enforce_real_data', True)
+        min_samples = requirements.get('min_samples_per_split', 10)
+        
+        if enforce_real_data:
+            # 强制检查真实数据集
+            data_dir = self.get_data_dir()
+            splits = ['train', 'val', 'test']
+            
+            for split in splits:
+                file_path = data_dir / f'dataset_items_{split}.json'
+                if not file_path.exists():
+                    raise FileNotFoundError(f"❌ 必需的数据文件不存在: {file_path}")
+                
+                # 检查文件是否有足够的样本
+                try:
+                    import json
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                    
+                    if len(data) < min_samples:
+                        raise ValueError(f"❌ {split} 数据集样本数不足: {len(data)} < {min_samples}")
+                    
+                    print(f"✅ {split} 数据集验证通过: {len(data)} 样本")
+                    
+                except Exception as e:
+                    raise ValueError(f"❌ 验证 {split} 数据集失败: {e}")
+        
+        return True
+    
+    def get_absolute_path(self, relative_path: str) -> Path:
+        """将相对路径转换为绝对路径"""
+        if os.path.isabs(relative_path):
+            return Path(relative_path)
+        else:
+            return self.code_root / relative_path
 
 
 # 全局配置管理器实例
@@ -184,6 +313,10 @@ def get_training_config():
     """获取训练配置"""
     return get_config_manager().get_training_config()
 
+def get_model_config():
+    """获取模型配置"""
+    return get_config_manager().get_model_config()
+
 def get_output_path(module: str, subdir: str) -> Path:
     """获取输出路径"""
     return get_config_manager().get_output_path(module, subdir)
@@ -204,21 +337,33 @@ def create_output_directories():
     """创建输出目录"""
     return get_config_manager().create_output_directories()
 
+def check_data_requirements():
+    """检查数据要求"""
+    return get_config_manager().check_data_requirements()
+
 
 # 测试代码
 if __name__ == "__main__":
-    print("🔧 测试配置管理器")
+    print("🔧 测试跨平台配置管理器")
     
-    # 创建配置管理器
-    config_mgr = ConfigManager()
-    
-    # 创建输出目录
-    created_dirs = config_mgr.create_output_directories()
-    print(f"创建目录数量: {created_dirs}")
-    
-    # 测试各种配置获取
-    print(f"数据目录: {config_mgr.get_data_dir()}")
-    print(f"标签映射: {config_mgr.get_label_mapping()}")
-    print(f"图表输出路径: {config_mgr.get_output_path('datasets', 'charts')}")
-    
-    print("✅ 配置管理器测试完成")
+    try:
+        # 创建配置管理器
+        config_mgr = ConfigManager()
+        
+        # 检查数据要求
+        config_mgr.check_data_requirements()
+        
+        # 创建输出目录
+        created_dirs = config_mgr.create_output_directories()
+        print(f"创建目录数量: {created_dirs}")
+        
+        # 测试各种配置获取
+        print(f"数据目录: {config_mgr.get_data_dir()}")
+        print(f"标签映射: {config_mgr.get_label_mapping()}")
+        print(f"图表输出路径: {config_mgr.get_output_path('datasets', 'charts')}")
+        
+        print("✅ 跨平台配置管理器测试完成")
+        
+    except Exception as e:
+        print(f"❌ 配置管理器测试失败: {e}")
+        print("请检查数据集是否已正确下载和解压")
