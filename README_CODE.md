@@ -16,7 +16,7 @@
 ## 🗂️ 目录结构
 
 ```
-code/
+nlp-learning-research-guide/
 ├── README.md                           # 项目总体说明
 ├── requirements.txt                    # 依赖包列表
 ├── environment.yml                     # conda环境配置

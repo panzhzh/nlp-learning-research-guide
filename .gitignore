@@ -50,7 +50,7 @@ Thumbs.db
 *.tmp
 *.temp
 
-# code/data 目录：
+# data 目录：
 # 忽略除 Markdown 文件外的所有内容
 data/*
 !data/*.md

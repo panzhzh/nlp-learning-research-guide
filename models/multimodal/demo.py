@@ -17,7 +17,7 @@ for _ in range(10):
         if str(search_dir) not in sys.path:
             sys.path.insert(0, str(search_dir))
         break
-    code_dir = search_dir / 'code'
+    code_dir = search_dir
     if (code_dir / 'datasets').exists() and (code_dir / 'models').exists():
         if str(code_dir) not in sys.path:
             sys.path.insert(0, str(code_dir))

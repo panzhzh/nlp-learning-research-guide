@@ -207,7 +207,7 @@ class ConfigManager:
         if base_dir == 'auto_detect':
             # 自动检测数据目录
             possible_data_dirs = [
-                self.code_root / 'data',           # code/data/
+                self.code_root / 'data',           # data/
                 self.project_root / 'data',        # project_root/data/
                 self.code_root.parent / 'data',    # 与code同级的data/
             ]

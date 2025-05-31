@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: ipanzhzh
-# code/datasets/mr2_analysis.py
+# datasets/mr2_analysis.py
 
 """
 MR2多模态谣言检测数据集深度分析
@@ -50,8 +50,8 @@ class MR2DatasetAnalyzer:
         初始化分析器
         
         Args:
-            data_dir: 数据目录路径 (相对于code目录)
-            output_dir: 输出目录路径 (相对于code目录)
+            data_dir: 数据目录路径
+            output_dir: 输出目录路径
         """
         if USE_CONFIG_MANAGER:
             # 使用配置管理器
