@@ -11,18 +11,9 @@ from pathlib import Path
 
 # 快速路径设置
 current_file = Path(__file__).resolve()
-search_dir = current_file.parent
-for _ in range(10):
-    if (search_dir / 'datasets').exists() and (search_dir / 'models').exists():
-        if str(search_dir) not in sys.path:
-            sys.path.insert(0, str(search_dir))
-        break
-    code_dir = search_dir
-    if (code_dir / 'datasets').exists() and (code_dir / 'models').exists():
-        if str(code_dir) not in sys.path:
-            sys.path.insert(0, str(code_dir))
-        break
-    search_dir = search_dir.parent
+project_root = current_file.parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 try:
     from models.multimodal.vision_language_models import MultiModalTrainer

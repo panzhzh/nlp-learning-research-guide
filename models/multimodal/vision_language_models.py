@@ -25,10 +25,11 @@ import sys
 import warnings
 warnings.filterwarnings('ignore')
 
-# 添加项目路径
+# 快速路径设置
 current_file = Path(__file__).resolve()
-code_root = current_file.parent.parent.parent
-sys.path.append(str(code_root))
+project_root = current_file.parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 # 导入项目模块
 try:
@@ -517,7 +518,7 @@ class MultiModalTrainer:
         return self._create_demo_data()
 
     def _load_data_directly(self) -> Dict[str, Tuple[List[str], List[str], List[int]]]:
-        """直接从JSON文件加载数据"""
+        """直接从JSON文件加载数据 - 修复版本"""
         print("📂 直接从JSON文件加载数据...")
         data = {}
         
@@ -537,36 +538,41 @@ class MultiModalTrainer:
                 labels = []
                 
                 for item_id, item_data in dataset_items.items():
-                    # 提取文本
-                    text = item_data.get('text', '')
-                    if not text:
+                    # 修复：优先检查caption字段，然后是text字段
+                    text = item_data.get('caption', '') or item_data.get('text', '')
+                    if not text or not text.strip():
+                        print(f"⚠️  跳过样本 {item_id}: 没有有效文本内容")
                         continue
                     
-                    texts.append(text)
+                    texts.append(text.strip())
                     
                     # 提取标签
                     label = item_data.get('label', 0)
                     labels.append(label)
                     
-                    # 构建图像路径 - 根据你的目录结构
-                    # 假设图像按索引命名：0.jpg, 1.jpg, 2.jpg...
-                    img_filename = f"{len(image_paths)}.jpg"  # 使用当前索引作为文件名
-                    img_path = f"{split}/img/{img_filename}"
+                    # 使用数据中提供的图像路径
+                    img_path = item_data.get('image_path', '')
+                    if not img_path:
+                        # 如果没有image_path，尝试构建路径
+                        img_path = f"{split}/img/{item_id}.jpg"
+                    
                     image_paths.append(img_path)
                 
                 data[split] = (texts, image_paths, labels)
                 print(f"✅ 直接加载 {split}: {len(texts)} 样本")
                 
-                # 验证一下前几个图像路径是否存在
-                valid_images = 0
-                for i, img_path in enumerate(image_paths[:5]):  # 只检查前5个
-                    full_path = self.data_dir / img_path
-                    if full_path.exists():
-                        valid_images += 1
-                    elif i < 3:  # 只打印前3个失败的
-                        print(f"   图像路径示例 {i}: {img_path} -> {full_path} (存在: {full_path.exists()})")
-                
-                print(f"   前5个图像中有效的: {valid_images}/5")
+                # 验证前几个图像路径是否存在
+                if image_paths:
+                    valid_images = 0
+                    check_count = min(len(image_paths), 5)
+                    for i, img_path in enumerate(image_paths[:check_count]):
+                        full_path = self.data_dir / img_path
+                        if full_path.exists():
+                            valid_images += 1
+                        elif i < 3:  # 只打印前3个失败的
+                            print(f"   图像路径示例 {i}: {img_path} -> {full_path} (存在: {full_path.exists()})")
+                    
+                    print(f"   前{check_count}个图像中有效的: {valid_images}/{check_count}")
                 
             except Exception as e:
                 print(f"❌ 直接加载 {split} 失败: {e}")

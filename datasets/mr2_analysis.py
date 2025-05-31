@@ -31,8 +31,9 @@ sns.set_style("whitegrid")
 
 # 添加配置管理器路径
 current_file = Path(__file__).resolve()
-code_root = current_file.parent.parent
-sys.path.append(str(code_root))
+project_root = current_file.parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 try:
     from utils.config_manager import get_config_manager, get_output_path, get_analysis_config, get_label_mapping, get_data_dir

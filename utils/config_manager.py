@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: ipanzhzh
-# code/utils/config_manager.py
+# utils/config_manager.py
 
 """
-跨平台配置管理器
-自动检测项目路径，支持Linux和Windows
+使用项目根目录作为基础路径
 """
 
 import os
@@ -16,22 +15,21 @@ import platform
 
 
 class ConfigManager:
-    """跨平台配置管理器"""
+    """配置管理器"""
     
     def __init__(self, config_dir: Optional[str] = None):
         """初始化配置管理器"""
-        # 自动检测项目结构
-        self.project_root, self.code_root = self._detect_project_structure()
+        # 直接使用当前项目目录作为根目录
+        self.project_root = Path.cwd()
         
-        # 设置配置目录
+        # 设置配置目录 - 直接在项目根目录下
         if config_dir is None:
-            self.config_dir = self.code_root / "config"
+            self.config_dir = self.project_root / "config"
         else:
             self.config_dir = Path(config_dir)
             
         print(f"🔧 运行环境: {platform.system()}")
         print(f"🔧 Project root: {self.project_root}")
-        print(f"🔧 Code root: {self.code_root}")
         print(f"🔧 Config dir: {self.config_dir}")
         
         # 加载配置
@@ -40,61 +38,6 @@ class ConfigManager:
         
         # 验证数据目录
         self._validate_data_directory()
-    
-    def _detect_project_structure(self) -> tuple[Path, Path]:
-        """
-        跨平台智能检测项目结构
-        支持从任何位置运行
-        """
-        # 获取当前文件所在目录
-        current_file = Path(__file__).resolve()
-        current_dir = current_file.parent
-        
-        # 情况1: 当前在 code/utils/ 下 (标准情况)
-        if current_dir.name == "utils" and current_dir.parent.name == "code":
-            code_root = current_dir.parent
-            project_root = code_root.parent
-            return project_root, code_root
-        
-        # 情况2: 从其他位置运行，向上查找项目根目录
-        search_dir = Path.cwd()
-        max_depth = 10  # 最多向上查找10层，防止无限循环
-        
-        for _ in range(max_depth):
-            # 检查是否包含code目录
-            code_candidate = search_dir / "code"
-            if code_candidate.exists() and code_candidate.is_dir():
-                # 验证是否是我们要的项目结构
-                expected_dirs = ["config", "utils", "datasets", "models"]
-                found_dirs = sum(1 for d in expected_dirs if (code_candidate / d).exists())
-                
-                if found_dirs >= 3:  # 至少包含3个预期目录
-                    return search_dir, code_candidate
-            
-            # 检查当前目录是否直接是code目录
-            expected_dirs = ["config", "utils", "datasets", "models"]
-            found_dirs = sum(1 for d in expected_dirs if (search_dir / d).exists())
-            if found_dirs >= 3:
-                return search_dir.parent, search_dir
-            
-            parent = search_dir.parent
-            if parent == search_dir:  # 已到根目录
-                break
-            search_dir = parent
-        
-        # 情况3: 使用当前工作目录作为fallback
-        cwd = Path.cwd()
-        
-        # 检查cwd是否包含code目录
-        if (cwd / "code").exists():
-            return cwd, cwd / "code"
-        
-        # 检查cwd的父目录是否包含code
-        if (cwd.parent / "code").exists():
-            return cwd.parent, cwd.parent / "code"
-        
-        # 最后fallback：假设当前目录就是code目录
-        return cwd.parent if cwd.name == "code" else cwd, cwd if cwd.name == "code" else cwd / "code"
     
     def _validate_data_directory(self):
         """验证数据目录是否存在"""
@@ -142,7 +85,7 @@ class ConfigManager:
             'data': 'data_configs.yaml',
             'training': 'training_configs.yaml',
             'supported_models': 'supported_models.yaml',
-            'model': 'model_configs.yaml'  # 新增模型配置
+            'model': 'model_configs.yaml'
         }
         
         for config_name, filename in config_files.items():
@@ -198,37 +141,31 @@ class ConfigManager:
     
     def get_data_dir(self) -> Path:
         """
-        获取数据目录路径 - 动态检测
+        获取数据目录路径 - 简化版本
         """
         data_config = self.get_data_config()
         dataset_paths = data_config.get('dataset', {}).get('paths', {})
         base_dir = dataset_paths.get('base_dir', 'auto_detect')
         
         if base_dir == 'auto_detect':
-            # 自动检测数据目录
-            possible_data_dirs = [
-                self.code_root / 'data',           # data/
-                self.project_root / 'data',        # project_root/data/
-                self.code_root.parent / 'data',    # 与code同级的data/
-            ]
-            
-            for data_dir in possible_data_dirs:
-                if data_dir.exists():
-                    print(f"🔍 找到数据目录: {data_dir}")
-                    return data_dir
-            
-            # 如果都不存在，返回默认路径 (会在验证时报错)
-            return self.code_root / 'data'
+            # 直接在项目根目录下查找data目录
+            data_dir = self.project_root / 'data'
+            if data_dir.exists():
+                print(f"🔍 找到数据目录: {data_dir}")
+                return data_dir
+            else:
+                # 如果不存在，返回默认路径 (会在验证时报错)
+                return data_dir
         else:
             # 使用配置中指定的路径
             if os.path.isabs(base_dir):
                 return Path(base_dir)
             else:
-                return self.code_root / base_dir
+                return self.project_root / base_dir
     
     def get_output_path(self, module: str, subdir: str) -> Path:
         """获取输出路径并自动创建目录"""
-        output_dir = self.code_root / 'outputs' / module / subdir
+        output_dir = self.project_root / 'outputs' / module / subdir
         output_dir.mkdir(parents=True, exist_ok=True)
         return output_dir
     
@@ -244,7 +181,7 @@ class ConfigManager:
         
         created_count = 0
         for dir_path in output_dirs:
-            full_path = self.code_root / dir_path
+            full_path = self.project_root / dir_path
             if not full_path.exists():
                 full_path.mkdir(parents=True, exist_ok=True)
                 created_count += 1
@@ -291,7 +228,7 @@ class ConfigManager:
         if os.path.isabs(relative_path):
             return Path(relative_path)
         else:
-            return self.code_root / relative_path
+            return self.project_root / relative_path
 
 
 # 全局配置管理器实例
@@ -344,7 +281,7 @@ def check_data_requirements():
 
 # 测试代码
 if __name__ == "__main__":
-    print("🔧 测试跨平台配置管理器")
+    print("🔧 测试简化配置管理器")
     
     try:
         # 创建配置管理器
@@ -362,7 +299,7 @@ if __name__ == "__main__":
         print(f"标签映射: {config_mgr.get_label_mapping()}")
         print(f"图表输出路径: {config_mgr.get_output_path('datasets', 'charts')}")
         
-        print("✅ 跨平台配置管理器测试完成")
+        print("✅ 简化配置管理器测试完成")
         
     except Exception as e:
         print(f"❌ 配置管理器测试失败: {e}")

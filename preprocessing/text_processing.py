@@ -18,8 +18,9 @@ import sys
 
 # 添加项目路径
 current_file = Path(__file__).resolve()
-code_root = current_file.parent.parent
-sys.path.append(str(code_root))
+project_root = current_file.parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 # 中文分词
 try:
