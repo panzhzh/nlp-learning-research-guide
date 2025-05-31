@@ -374,3 +374,71 @@ class TextProcessor:
         
         # emoji统计
         features['emoji_count'] = len(re.findall(r'[\U0001F600-\U0001F64F\U0001F300-\U0001F5FF\U0001F680-\U0001F6FF\U0001F1E0-\U0001F1FF]', text))
+        
+        return features
+    
+    def preprocess_batch(self, texts: List[str]) -> List[Dict[str, any]]:
+        """
+        批量预处理文本
+        
+        Args:
+            texts: 文本列表
+            
+        Returns:
+            预处理结果列表
+        """
+        results = []
+        for text in texts:
+            result = {
+                'original_text': text,
+                'cleaned_text': self.clean_text(text),
+                'tokens': self.tokenize(text),
+                'features': self.extract_features(text)
+            }
+            results.append(result)
+        return results
+
+
+# 使用示例和测试代码
+if __name__ == "__main__":
+    print("🔄 测试文本处理模块")
+    
+    # 创建文本处理器
+    processor = TextProcessor(language='mixed')
+    
+    # 测试文本
+    test_texts = [
+        "这是一个测试文本 This is a test text!",
+        "今天天气不错，适合出门游玩。",
+        "Breaking news: AI technology advances rapidly!",
+        "混合语言文本 with English words and 中文字符",
+        "包含URL的文本 https://example.com 和@username提及",
+        "带有emoji的文本 😊 和 #hashtag 标签"
+    ]
+    
+    print("\n📝 === 文本处理测试 ===")
+    for i, text in enumerate(test_texts, 1):
+        print(f"\n测试 {i}: {text}")
+        
+        # 语言检测
+        language = processor.detect_language(text)
+        print(f"  语言: {language}")
+        
+        # 文本清洗
+        cleaned = processor.clean_text(text)
+        print(f"  清洗后: {cleaned}")
+        
+        # 分词
+        tokens = processor.tokenize(text)
+        print(f"  分词结果: {tokens}")
+        
+        # 特征提取
+        features = processor.extract_features(text)
+        print(f"  特征: 长度={features['text_length']}, 词数={features['token_count']}, 语言={features['language']}")
+    
+    print("\n🔄 测试批量处理")
+    batch_results = processor.preprocess_batch(test_texts[:3])
+    for i, result in enumerate(batch_results):
+        print(f"  批量结果 {i+1}: {len(result['tokens'])} 个token")
+    
+    print("\n✅ 文本处理模块测试完成")

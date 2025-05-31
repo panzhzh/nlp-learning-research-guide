@@ -54,4 +54,4 @@ Thumbs.db
 # 忽略除 Markdown 文件外的所有内容
 code/data/*
 !code/data/*.md
-code/output/*
+code/outputs/*
