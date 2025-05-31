@@ -48,6 +48,9 @@
 - 6.2 投稿与审稿流程
 - 6.3 学术诚信与规范
 
+### [专题](./special-topics/)
+- [专题1 Web of Science 筛选指南](./special-topics/web-of-science-screening-guide.md)
+
 ### [附录](./appendix/)
 - [附录A 重要会议与期刊列表](./appendix/conferences-journals-list.md)
 - [附录B 常用工具与资源](./appendix/tools-resources.md)
