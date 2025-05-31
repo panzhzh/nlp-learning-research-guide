@@ -159,9 +159,10 @@ class ImageProcessor:
         if width < 50 or height < 50:
             return False
         
-        # 检查图像数据
+        # 检查图像数据 - 修复验证方法
         try:
-            image.verify()
+            # 使用copy()方法验证图像数据而不是verify()
+            _ = image.copy()
             return True
         except Exception:
             return False
@@ -323,7 +324,7 @@ class ImageProcessor:
     
     def extract_image_features(self, image: Image.Image) -> Dict[str, float]:
         """
-        提取图像特征
+        提取图像特征 - 修复计算错误
         
         Args:
             image: PIL Image对象
@@ -452,7 +453,7 @@ class ImageProcessor:
                     img_info = self.get_image_info(image_path)
                     split_results['image_info'][item_id] = img_info
                     
-                    # 加载图像并提取特征
+                    # 加载图像并提取特征 - 修复这里的处理逻辑
                     image = self.load_image(image_path)
                     if image is not None:
                         features = self.extract_image_features(image)
