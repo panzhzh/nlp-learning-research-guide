@@ -52,6 +52,6 @@ Thumbs.db
 
 # code/data 目录：
 # 忽略除 Markdown 文件外的所有内容
-code/data/*
-!code/data/*.md
-code/outputs/*
+data/*
+!data/*.md
+outputs/*

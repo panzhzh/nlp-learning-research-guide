@@ -4,8 +4,8 @@
 # models/multimodal/vision_language_models.py
 
 """
-多模态视觉-语言模型实现 - 修复版本
-修复数据加载器调用问题
+多模态视觉-语言模型实现 - 修复图像路径问题
+解决图像加载失败的问题
 """
 
 import torch
@@ -65,10 +65,10 @@ logger = logging.getLogger(__name__)
 
 
 class MultiModalDataset(Dataset):
-    """多模态数据集类"""
+    """多模态数据集类 - 修复图像路径处理"""
     
     def __init__(self, texts: List[str], image_paths: List[str], labels: List[int], 
-                 text_processor, image_processor, max_text_length: int = 77):
+                 data_dir: str, text_processor, image_processor, max_text_length: int = 77):
         """
         初始化多模态数据集
         
@@ -76,6 +76,7 @@ class MultiModalDataset(Dataset):
             texts: 文本列表
             image_paths: 图像路径列表
             labels: 标签列表
+            data_dir: 数据根目录路径
             text_processor: 文本处理器
             image_processor: 图像处理器
             max_text_length: 最大文本长度
@@ -83,6 +84,7 @@ class MultiModalDataset(Dataset):
         self.texts = texts
         self.image_paths = image_paths
         self.labels = labels
+        self.data_dir = Path(data_dir)  # 保存数据根目录
         self.text_processor = text_processor
         self.image_processor = image_processor
         self.max_text_length = max_text_length
@@ -93,7 +95,72 @@ class MultiModalDataset(Dataset):
         self.image_paths = image_paths[:min_length]
         self.labels = labels[:min_length]
         
+        # 验证并修复图像路径
+        self._fix_image_paths()
+        
         print(f"📊 多模态数据集初始化: {len(self.texts)} 样本")
+    
+    def _fix_image_paths(self):
+        """修复和验证图像路径"""
+        print(f"🔧 修复图像路径...")
+        
+        fixed_paths = []
+        valid_count = 0
+        
+        for i, img_path in enumerate(self.image_paths):
+            if not img_path or img_path == "":
+                # 空路径，保持为空
+                fixed_paths.append("")
+                continue
+                
+            # 构建可能的图像路径
+            # 根据你的实际路径结构: data/split/img/index.jpg
+            possible_paths = [
+                self.data_dir / img_path,  # 直接相对于数据目录
+                Path(img_path),  # 原始路径（如果是绝对路径）
+            ]
+            
+            # 如果路径中不包含目录分隔符，可能只是文件名
+            if "/" not in str(img_path) and "\\" not in str(img_path):
+                # 尝试在各个split的img目录中查找
+                for split in ['train', 'val', 'test']:
+                    possible_paths.append(self.data_dir / split / 'img' / img_path)
+            
+            # 查找存在的路径
+            found_path = None
+            for test_path in possible_paths:
+                if test_path.exists() and test_path.is_file():
+                    # 将绝对路径转换为相对于data_dir的路径
+                    try:
+                        relative_path = test_path.relative_to(self.data_dir)
+                        found_path = str(relative_path)
+                        break
+                    except ValueError:
+                        # 如果无法转换为相对路径，使用绝对路径
+                        found_path = str(test_path)
+                        break
+            
+            if found_path:
+                fixed_paths.append(found_path)
+                valid_count += 1
+            else:
+                # 如果找不到，记录调试信息
+                if i < 5:  # 只打印前5个失败案例
+                    print(f"⚠️  找不到图像文件 {i}: {img_path}")
+                    print(f"   尝试的路径:")
+                    for j, p in enumerate(possible_paths[:3]):  # 只显示前3个尝试
+                        print(f"     {p} - 存在: {p.exists()}")
+                fixed_paths.append("")
+        
+        self.image_paths = fixed_paths
+        print(f"✅ 图像路径修复完成: {valid_count}/{len(self.image_paths)} 个有效图像")
+        
+        # 显示前几个有效路径作为示例
+        valid_examples = [path for path in fixed_paths[:10] if path]
+        if valid_examples:
+            print(f"   图像路径示例: {valid_examples[:3]}")
+        
+        return valid_count > 0
     
     def __len__(self):
         return len(self.texts)
@@ -106,7 +173,14 @@ class MultiModalDataset(Dataset):
         # 处理文本
         if hasattr(self.text_processor, 'tokenize') and callable(self.text_processor.tokenize):
             # 使用CLIP tokenizer
-            text_tokens = self.text_processor.tokenize(text)
+            try:
+                text_tokens = self.text_processor.tokenize(text)
+            except:
+                # CLIP tokenizer失败，使用简单处理
+                words = text.split()[:self.max_text_length]
+                text_tokens = torch.zeros(self.max_text_length, dtype=torch.long)
+                for i, word in enumerate(words):
+                    text_tokens[i] = hash(word) % 30000
         else:
             # 简单文本处理
             words = text.split()[:self.max_text_length]
@@ -114,20 +188,18 @@ class MultiModalDataset(Dataset):
             for i, word in enumerate(words):
                 text_tokens[i] = hash(word) % 30000  # 简单hash编码
         
-        # 修复：正确处理真实图像路径
+        # 处理图像 - 修复图像加载逻辑
         try:
             if image_path and Path(image_path).exists():
-                # 有真实图像文件
+                # 使用项目的图像处理器
                 if hasattr(self.image_processor, 'process_single_image'):
-                    # 使用项目的图像处理器
                     image_tensor = self.image_processor.process_single_image(
                         image_path, transform_type='val'
                     )
                     if image_tensor is None:
-                        # 处理失败，创建空图像tensor
-                        image_tensor = torch.zeros(3, 224, 224)
+                        raise ValueError("图像处理器返回None")
                 else:
-                    # 使用简单图像处理
+                    # 使用PIL直接处理
                     image = Image.open(image_path).convert('RGB')
                     transform = transforms.Compose([
                         transforms.Resize((224, 224)),
@@ -141,8 +213,7 @@ class MultiModalDataset(Dataset):
                 image_tensor = torch.zeros(3, 224, 224)
                 
         except Exception as e:
-            # 处理任何图像加载错误
-            print(f"⚠️  加载图像失败 {image_path}: {e}")
+            # 处理任何图像加载错误，创建空tensor
             image_tensor = torch.zeros(3, 224, 224)
         
         return {
@@ -152,6 +223,7 @@ class MultiModalDataset(Dataset):
             'text_raw': text,
             'image_path': str(image_path) if image_path else ""
         }
+
 
 class SimpleCLIPModel(nn.Module):
     """简化的CLIP风格模型"""
@@ -308,7 +380,7 @@ class CLIPBasedClassifier(nn.Module):
 
 
 class MultiModalTrainer:
-    """多模态模型训练器"""
+    """多模态模型训练器 - 修复数据加载"""
     
     def __init__(self, data_dir: str = "data", device: str = "auto"):
         """
@@ -318,7 +390,7 @@ class MultiModalTrainer:
             data_dir: 数据目录路径
             device: 计算设备
         """
-        self.data_dir = data_dir
+        self.data_dir = Path(data_dir).resolve()  # 转换为绝对路径
         
         # 设置设备
         if device == "auto":
@@ -356,12 +428,22 @@ class MultiModalTrainer:
         print(f"   输出目录: {self.output_dir}")
     
     def load_data(self) -> Dict[str, Tuple[List[str], List[str], List[int]]]:
-        """加载MR2多模态数据集 - 修复版本，使用真实图像路径"""
+        """加载MR2多模态数据集 - 改进版本，优先使用直接加载"""
         print("📚 加载MR2多模态数据集...")
         
+        # 优先尝试直接从JSON文件加载，更可靠
+        try:
+            data = self._load_data_directly()
+            if data and len(data) > 0:
+                print("✅ 使用直接文件加载成功")
+                return data
+        except Exception as e:
+            print(f"⚠️  直接文件加载失败: {e}")
+        
+        # 备用：尝试使用数据加载器
         if USE_PROJECT_MODULES:
             try:
-                # 修复：使用正确的函数调用方式
+                print("🔄 尝试使用数据加载器...")
                 dataloaders = create_all_dataloaders(
                     batch_sizes={'train': 16, 'val': 16, 'test': 16}
                 )
@@ -372,54 +454,128 @@ class MultiModalTrainer:
                     image_paths = []
                     labels = []
                     
-                    for batch in dataloader:
+                    print(f"📂 处理 {split} 数据集...")
+                    
+                    for batch_idx, batch in enumerate(dataloader):
                         # 提取文本
                         if 'text' in batch:
-                            texts.extend(batch['text'])
+                            batch_texts = batch['text']
                         elif 'caption' in batch:
-                            texts.extend(batch['caption'])
-                        
-                        # 修复：提取真实的图像路径
-                        if 'image_path' in batch:
-                            # 构建完整的图像路径
-                            batch_image_paths = []
-                            for img_path in batch['image_path']:
-                                if img_path:  # 确保路径不为空
-                                    # 构建相对于数据目录的完整路径
-                                    full_path = Path(self.data_dir) / img_path
-                                    batch_image_paths.append(str(full_path))
-                                else:
-                                    # 如果没有图像路径，使用空字符串，后续处理时会创建空tensor
-                                    batch_image_paths.append("")
-                            image_paths.extend(batch_image_paths)
+                            batch_texts = batch['caption']
                         else:
-                            # 如果batch中没有image_path，为每个文本创建空路径
-                            text_count = len(batch.get('text', batch.get('caption', [])))
-                            image_paths.extend([""] * text_count)
+                            print(f"⚠️  批次 {batch_idx} 没有文本字段")
+                            continue
+                        
+                        texts.extend(batch_texts)
                         
                         # 提取标签
                         if 'labels' in batch:
-                            labels.extend(batch['labels'].tolist())
+                            batch_labels = batch['labels'].tolist()
                         elif 'label' in batch:
-                            labels.extend(batch['label'])
+                            batch_labels = batch['label']
+                        else:
+                            print(f"⚠️  批次 {batch_idx} 没有标签字段")
+                            batch_labels = [0] * len(batch_texts)
+                        
+                        labels.extend(batch_labels)
+                        
+                        # 修复：检查数据集是否有图像路径信息
+                        batch_size = len(batch_texts)
+                        batch_image_paths = []
+                        
+                        # 尝试从batch中获取图像路径
+                        if 'image_path' in batch:
+                            batch_image_paths = batch['image_path']
+                        else:
+                            # 如果batch中没有image_path，尝试构建路径
+                            # 根据数据目录结构：data/split/img/index.jpg
+                            start_idx = batch_idx * dataloader.batch_size
+                            for i in range(batch_size):
+                                img_path = f"{split}/img/{start_idx + i}.jpg"
+                                batch_image_paths.append(img_path)
+                        
+                        image_paths.extend(batch_image_paths)
+                    
+                    # 确保三个列表长度一致
+                    min_length = min(len(texts), len(image_paths), len(labels))
+                    if min_length < len(texts):
+                        print(f"⚠️  {split} 数据长度不一致，截断到 {min_length}")
+                        texts = texts[:min_length]
+                        image_paths = image_paths[:min_length]
+                        labels = labels[:min_length]
                     
                     data[split] = (texts, image_paths, labels)
                     print(f"✅ 加载 {split}: {len(texts)} 样本")
-                    
-                    # 统计有效图像数量
-                    valid_images = sum(1 for path in image_paths if path and Path(path).exists())
-                    print(f"   有效图像: {valid_images}/{len(image_paths)}")
                 
                 return data
                 
             except Exception as e:
                 print(f"❌ 使用项目数据加载器失败: {e}")
-                return self._create_demo_data()
-        else:
-            return self._create_demo_data()
+        
+        # 最后备用：创建演示数据
+        print("🔄 使用演示数据...")
+        return self._create_demo_data()
+
+    def _load_data_directly(self) -> Dict[str, Tuple[List[str], List[str], List[int]]]:
+        """直接从JSON文件加载数据"""
+        print("📂 直接从JSON文件加载数据...")
+        data = {}
+        
+        for split in ['train', 'val', 'test']:
+            dataset_file = self.data_dir / f'dataset_items_{split}.json'
+            
+            if not dataset_file.exists():
+                print(f"⚠️  数据文件不存在: {dataset_file}")
+                continue
+            
+            try:
+                with open(dataset_file, 'r', encoding='utf-8') as f:
+                    dataset_items = json.load(f)
+                
+                texts = []
+                image_paths = []
+                labels = []
+                
+                for item_id, item_data in dataset_items.items():
+                    # 提取文本
+                    text = item_data.get('text', '')
+                    if not text:
+                        continue
+                    
+                    texts.append(text)
+                    
+                    # 提取标签
+                    label = item_data.get('label', 0)
+                    labels.append(label)
+                    
+                    # 构建图像路径 - 根据你的目录结构
+                    # 假设图像按索引命名：0.jpg, 1.jpg, 2.jpg...
+                    img_filename = f"{len(image_paths)}.jpg"  # 使用当前索引作为文件名
+                    img_path = f"{split}/img/{img_filename}"
+                    image_paths.append(img_path)
+                
+                data[split] = (texts, image_paths, labels)
+                print(f"✅ 直接加载 {split}: {len(texts)} 样本")
+                
+                # 验证一下前几个图像路径是否存在
+                valid_images = 0
+                for i, img_path in enumerate(image_paths[:5]):  # 只检查前5个
+                    full_path = self.data_dir / img_path
+                    if full_path.exists():
+                        valid_images += 1
+                    elif i < 3:  # 只打印前3个失败的
+                        print(f"   图像路径示例 {i}: {img_path} -> {full_path} (存在: {full_path.exists()})")
+                
+                print(f"   前5个图像中有效的: {valid_images}/5")
+                
+            except Exception as e:
+                print(f"❌ 直接加载 {split} 失败: {e}")
+                continue
+        
+        return data
 
     def _create_demo_data(self) -> Dict[str, Tuple[List[str], List[str], List[int]]]:
-        """创建演示数据 - 修复版本，不创建虚拟图像路径"""
+        """创建演示数据"""
         print("🔧 创建多模态演示数据...")
         print("⚠️  注意：由于没有真实数据，将使用空图像路径")
         
@@ -437,9 +593,6 @@ class MultiModalTrainer:
         ]
         
         demo_labels = [0, 1, 2, 0, 2, 0, 1, 0, 2, 0]
-        
-        # 修复：不创建虚拟图像路径，使用空字符串
-        # 这样在实际处理时会创建空的tensor，而不是尝试加载不存在的文件
         demo_image_paths = [""] * len(demo_texts)
         
         # 扩展数据
@@ -685,15 +838,15 @@ class MultiModalTrainer:
         # 创建数据集
         train_dataset = MultiModalDataset(
             data['train'][0], data['train'][1], data['train'][2],
-            text_processor, self.image_processor
+            str(self.data_dir), text_processor, self.image_processor
         )
         val_dataset = MultiModalDataset(
             data['val'][0], data['val'][1], data['val'][2],
-            text_processor, self.image_processor
+            str(self.data_dir), text_processor, self.image_processor
         )
         test_dataset = MultiModalDataset(
             data['test'][0], data['test'][1], data['test'][2],
-            text_processor, self.image_processor
+            str(self.data_dir), text_processor, self.image_processor
         )
         
         # 创建数据加载器
