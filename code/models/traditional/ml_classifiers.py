@@ -4,9 +4,8 @@
 # models/traditional/ml_classifiers.py
 
 """
-传统机器学习分类器模块
-支持SVM、Random Forest、Naive Bayes、Logistic Regression等算法
-集成TF-IDF特征提取，可直接用于MR2数据集
+传统机器学习分类器模块 - 修复版本
+修复数据加载器调用问题
 """
 
 import numpy as np
@@ -88,7 +87,7 @@ class MLClassifierTrainer:
     
     def load_data(self) -> Dict[str, Tuple[List[str], List[int]]]:
         """
-        加载MR2数据集
+        加载MR2数据集 - 修复版本
         
         Returns:
             数据字典 {split: (texts, labels)}
@@ -97,9 +96,8 @@ class MLClassifierTrainer:
         
         if USE_PROJECT_MODULES:
             try:
-                # 使用项目的数据加载器
+                # 修复：使用正确的函数调用方式
                 dataloaders = create_all_dataloaders(
-                    data_dir=self.data_dir,
                     batch_sizes={'train': 32, 'val': 32, 'test': 32}
                 )
                 

@@ -4,9 +4,8 @@
 # models/multimodal/vision_language_models.py
 
 """
-多模态视觉-语言模型实现
-支持CLIP、BLIP等模型，完美集成现有的文本和图像处理管道
-专门为MR2谣言检测任务设计
+多模态视觉-语言模型实现 - 修复版本
+修复数据加载器调用问题
 """
 
 import torch
@@ -115,19 +114,20 @@ class MultiModalDataset(Dataset):
             for i, word in enumerate(words):
                 text_tokens[i] = hash(word) % 30000  # 简单hash编码
         
-        # 处理图像
+        # 修复：正确处理真实图像路径
         try:
-            if hasattr(self.image_processor, 'process_single_image'):
-                # 使用项目的图像处理器
-                image_tensor = self.image_processor.process_single_image(
-                    image_path, transform_type='val'
-                )
-                if image_tensor is None:
-                    # 创建空图像tensor
-                    image_tensor = torch.zeros(3, 224, 224)
-            else:
-                # 简单图像处理
-                try:
+            if image_path and Path(image_path).exists():
+                # 有真实图像文件
+                if hasattr(self.image_processor, 'process_single_image'):
+                    # 使用项目的图像处理器
+                    image_tensor = self.image_processor.process_single_image(
+                        image_path, transform_type='val'
+                    )
+                    if image_tensor is None:
+                        # 处理失败，创建空图像tensor
+                        image_tensor = torch.zeros(3, 224, 224)
+                else:
+                    # 使用简单图像处理
                     image = Image.open(image_path).convert('RGB')
                     transform = transforms.Compose([
                         transforms.Resize((224, 224)),
@@ -136,9 +136,13 @@ class MultiModalDataset(Dataset):
                                            std=[0.229, 0.224, 0.225])
                     ])
                     image_tensor = transform(image)
-                except:
-                    image_tensor = torch.zeros(3, 224, 224)
-        except:
+            else:
+                # 没有图像文件或文件不存在，创建空tensor
+                image_tensor = torch.zeros(3, 224, 224)
+                
+        except Exception as e:
+            # 处理任何图像加载错误
+            print(f"⚠️  加载图像失败 {image_path}: {e}")
             image_tensor = torch.zeros(3, 224, 224)
         
         return {
@@ -146,9 +150,8 @@ class MultiModalDataset(Dataset):
             'image': image_tensor,
             'labels': torch.tensor(label, dtype=torch.long),
             'text_raw': text,
-            'image_path': str(image_path)
+            'image_path': str(image_path) if image_path else ""
         }
-
 
 class SimpleCLIPModel(nn.Module):
     """简化的CLIP风格模型"""
@@ -353,14 +356,13 @@ class MultiModalTrainer:
         print(f"   输出目录: {self.output_dir}")
     
     def load_data(self) -> Dict[str, Tuple[List[str], List[str], List[int]]]:
-        """加载MR2多模态数据集"""
+        """加载MR2多模态数据集 - 修复版本，使用真实图像路径"""
         print("📚 加载MR2多模态数据集...")
         
         if USE_PROJECT_MODULES:
             try:
-                # 使用项目的数据加载器
+                # 修复：使用正确的函数调用方式
                 dataloaders = create_all_dataloaders(
-                    data_dir=self.data_dir,
                     batch_sizes={'train': 16, 'val': 16, 'test': 16}
                 )
                 
@@ -377,12 +379,23 @@ class MultiModalTrainer:
                         elif 'caption' in batch:
                             texts.extend(batch['caption'])
                         
-                        # 提取图像路径
+                        # 修复：提取真实的图像路径
                         if 'image_path' in batch:
-                            image_paths.extend(batch['image_path'])
+                            # 构建完整的图像路径
+                            batch_image_paths = []
+                            for img_path in batch['image_path']:
+                                if img_path:  # 确保路径不为空
+                                    # 构建相对于数据目录的完整路径
+                                    full_path = Path(self.data_dir) / img_path
+                                    batch_image_paths.append(str(full_path))
+                                else:
+                                    # 如果没有图像路径，使用空字符串，后续处理时会创建空tensor
+                                    batch_image_paths.append("")
+                            image_paths.extend(batch_image_paths)
                         else:
-                            # 创建虚拟图像路径
-                            image_paths.extend([f"dummy_image_{i}.jpg" for i in range(len(batch.get('text', batch.get('caption', []))))])
+                            # 如果batch中没有image_path，为每个文本创建空路径
+                            text_count = len(batch.get('text', batch.get('caption', [])))
+                            image_paths.extend([""] * text_count)
                         
                         # 提取标签
                         if 'labels' in batch:
@@ -392,6 +405,10 @@ class MultiModalTrainer:
                     
                     data[split] = (texts, image_paths, labels)
                     print(f"✅ 加载 {split}: {len(texts)} 样本")
+                    
+                    # 统计有效图像数量
+                    valid_images = sum(1 for path in image_paths if path and Path(path).exists())
+                    print(f"   有效图像: {valid_images}/{len(image_paths)}")
                 
                 return data
                 
@@ -400,10 +417,11 @@ class MultiModalTrainer:
                 return self._create_demo_data()
         else:
             return self._create_demo_data()
-    
+
     def _create_demo_data(self) -> Dict[str, Tuple[List[str], List[str], List[int]]]:
-        """创建演示数据"""
+        """创建演示数据 - 修复版本，不创建虚拟图像路径"""
         print("🔧 创建多模态演示数据...")
+        print("⚠️  注意：由于没有真实数据，将使用空图像路径")
         
         demo_texts = [
             "这是一个关于科技进步的真实新闻报道",
@@ -420,8 +438,9 @@ class MultiModalTrainer:
         
         demo_labels = [0, 1, 2, 0, 2, 0, 1, 0, 2, 0]
         
-        # 创建虚拟图像路径
-        demo_image_paths = [f"demo_image_{i}.jpg" for i in range(len(demo_texts))]
+        # 修复：不创建虚拟图像路径，使用空字符串
+        # 这样在实际处理时会创建空的tensor，而不是尝试加载不存在的文件
+        demo_image_paths = [""] * len(demo_texts)
         
         # 扩展数据
         extended_texts = demo_texts * 8
@@ -432,6 +451,8 @@ class MultiModalTrainer:
         total_size = len(extended_texts)
         train_size = int(0.7 * total_size)
         val_size = int(0.15 * total_size)
+        
+        print(f"📝 创建演示数据: {total_size} 个样本（无图像）")
         
         return {
             'train': (extended_texts[:train_size], 
@@ -444,7 +465,7 @@ class MultiModalTrainer:
                     extended_image_paths[train_size+val_size:],
                     extended_labels[train_size+val_size:])
         }
-    
+
     def create_models(self):
         """创建多模态模型"""
         print("🎭 创建多模态模型...")

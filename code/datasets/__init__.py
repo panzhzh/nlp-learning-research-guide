@@ -6,7 +6,7 @@
 """
 数据集模块
 包含MR2数据集相关的所有组件
-更新版本：适配简化的模块结构
+修复版本：解决导入错误和函数调用问题
 """
 
 # 尝试导入简化版本的模块
@@ -25,28 +25,25 @@ except ImportError:
 
 # 尝试导入数据加载器
 try:
-    # 优先导入简化版本
-    from .data_loaders import create_simple_dataloader, create_all_dataloaders, SimpleDataLoaderConfig
-    print("✅ 导入简化版数据加载器")
+    # 导入正确的函数和类
+    from .data_loaders import create_all_dataloaders, create_strict_dataloader, StrictDataLoaderConfig
+    print("✅ 导入数据加载器")
     
     # 为了向后兼容，创建别名
     create_mr2_dataloaders = create_all_dataloaders
-    DataLoaderFactory = SimpleDataLoaderConfig
+    DataLoaderFactory = StrictDataLoaderConfig  # 使用实际存在的类
     
-except ImportError:
-    try:
-        # fallback到原版本
-        from .data_loaders import create_mr2_dataloaders, DataLoaderFactory
-        print("✅ 导入原版数据加载器")
-    except ImportError as e:
-        print(f"❌ 导入数据加载器失败: {e}")
-        create_mr2_dataloaders = None
-        DataLoaderFactory = None
+except ImportError as e:
+    print(f"❌ 导入数据加载器失败: {e}")
+    create_all_dataloaders = None
+    create_mr2_dataloaders = None
+    DataLoaderFactory = None
 
 # 导出的公共接口
 __all__ = [
     'MR2Dataset',
     'create_mr2_dataloaders', 
+    'create_all_dataloaders',
     'DataLoaderFactory'
 ]
 
@@ -56,6 +53,7 @@ def get_available_components():
     components = {
         'MR2Dataset': MR2Dataset is not None,
         'create_mr2_dataloaders': create_mr2_dataloaders is not None,
+        'create_all_dataloaders': create_all_dataloaders is not None,
         'DataLoaderFactory': DataLoaderFactory is not None
     }
     return components

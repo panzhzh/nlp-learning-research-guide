@@ -4,9 +4,8 @@
 # models/pretrained/encoder_models.py
 
 """
-预训练编码器模型实现
-支持BERT、RoBERTa、ALBERT、DeBERTa等主流预训练模型
-完全复用现有的数据加载和训练框架
+预训练编码器模型实现 - 修复版本
+修复数据加载器调用问题
 """
 
 import torch
@@ -229,14 +228,13 @@ class PretrainedModelTrainer:
         print(f"   支持模型: {list(self.model_configs.keys())}")
     
     def load_data(self) -> Dict[str, Tuple[List[str], List[int]]]:
-        """加载MR2数据集"""
+        """加载MR2数据集 - 修复版本"""
         print("📚 加载MR2数据集...")
         
         if USE_PROJECT_MODULES:
             try:
-                # 使用项目的数据加载器
+                # 修复：使用正确的函数调用方式
                 dataloaders = create_all_dataloaders(
-                    data_dir=self.data_dir,
                     batch_sizes={'train': 32, 'val': 32, 'test': 32}
                 )
                 

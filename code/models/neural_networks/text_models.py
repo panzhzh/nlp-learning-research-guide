@@ -297,14 +297,13 @@ class NeuralTextClassifier:
         print(f"   输出目录: {self.output_dir}")
     
     def load_data(self) -> Dict[str, Tuple[List[str], List[int]]]:
-        """加载MR2数据集"""
+        """加载MR2数据集 - 修复版本"""
         print("📚 加载MR2数据集...")
         
         if USE_PROJECT_MODULES:
             try:
-                # 使用项目的数据加载器
+                # 修复：使用正确的函数调用方式
                 dataloaders = create_all_dataloaders(
-                    data_dir=self.data_dir,
                     batch_sizes={'train': 32, 'val': 32, 'test': 32}
                 )
                 
@@ -335,7 +334,7 @@ class NeuralTextClassifier:
                 return self._create_demo_data()
         else:
             return self._create_demo_data()
-    
+
     def _create_demo_data(self) -> Dict[str, Tuple[List[str], List[int]]]:
         """创建演示数据"""
         print("🔧 创建演示数据...")
