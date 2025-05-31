@@ -20,27 +20,49 @@ current_file = Path(__file__).resolve()
 code_root = current_file.parent.parent
 sys.path.append(str(code_root))
 
-# 导入必要模块
+# 导入必要模块 - 修复导入问题
 try:
-    from datasets.mr2_dataset import MR2Dataset
-    from utils.config_manager import get_training_config, get_data_config
+    # 方法1: 尝试相对导入
+    from .mr2_dataset import MR2Dataset
     USE_CUSTOM_MODULES = True
-    print("✅ 成功导入自定义模块")
-except ImportError as e:
-    print(f"⚠️  导入自定义模块失败: {e}")
-    USE_CUSTOM_MODULES = False
-    
-    # 创建简单的数据集占位符
-    class MR2Dataset:
-        def __init__(self, *args, **kwargs):
-            self.items = []
-            print("使用简化版MR2Dataset")
-        
-        def __len__(self):
-            return len(self.items)
-        
-        def __getitem__(self, idx):
-            return {'item_id': 'demo', 'label': 0, 'text': 'demo text'}
+    print("✅ 成功导入自定义模块 (相对导入)")
+except ImportError:
+    try:
+        # 方法2: 尝试直接导入
+        from mr2_dataset import MR2Dataset
+        USE_CUSTOM_MODULES = True
+        print("✅ 成功导入自定义模块 (直接导入)")
+    except ImportError:
+        try:
+            # 方法3: 尝试绝对路径导入
+            import sys
+            datasets_path = current_file.parent
+            sys.path.insert(0, str(datasets_path))
+            from mr2_dataset import MR2Dataset
+            USE_CUSTOM_MODULES = True
+            print("✅ 成功导入自定义模块 (绝对路径导入)")
+        except ImportError as e:
+            print(f"⚠️  导入自定义模块失败: {e}")
+            USE_CUSTOM_MODULES = False
+            
+            # 创建简单的数据集占位符
+            class MR2Dataset:
+                def __init__(self, *args, **kwargs):
+                    self.items = []
+                    print("使用简化版MR2Dataset")
+                
+                def __len__(self):
+                    return len(self.items)
+                
+                def __getitem__(self, idx):
+                    return {'item_id': 'demo', 'label': 0, 'text': 'demo text'}
+
+# 尝试导入配置管理器
+try:
+    from utils.config_manager import get_training_config, get_data_config
+    USE_CONFIG = True
+except ImportError:
+    USE_CONFIG = False
 
 
 class SimpleDataLoaderConfig:
@@ -52,7 +74,7 @@ class SimpleDataLoaderConfig:
     
     def load_config(self) -> Dict[str, Any]:
         """加载配置"""
-        if USE_CUSTOM_MODULES:
+        if USE_CONFIG:
             try:
                 training_config = get_training_config()
                 data_config = get_data_config()
@@ -65,8 +87,8 @@ class SimpleDataLoaderConfig:
                     'num_workers': general_config.get('data_workers', 4),
                     'pin_memory': general_config.get('pin_memory', True)
                 }
-            except:
-                pass
+            except Exception as e:
+                print(f"⚠️  加载配置失败: {e}")
         
         # 默认配置
         return {
@@ -99,8 +121,8 @@ class SimpleCollateFunction:
         
         batch_data = {}
         
-        # 处理基本字段
-        for key in ['item_id', 'label', 'text']:
+        # 处理基本字段 - 修复为支持caption字段
+        for key in ['item_id', 'label', 'text', 'caption']:
             if key in batch[0]:
                 batch_data[key] = [item.get(key) for item in batch]
         
@@ -168,12 +190,12 @@ def create_simple_dataloader(data_dir: str,
             dataset.items = [{'item_id': f'demo_{i}', 'label': i % 3, 'text': f'Demo text {i}'} for i in range(10)]
         else:
             # 创建真实数据集
+            print(f"✅ 使用真实MR2数据集")
             dataset = MR2Dataset(
                 data_dir=data_dir,
                 split=split,
                 transform_type='train' if split == 'train' else 'val',
-                load_retrieval_info=False,  # 简化：不加载检索信息
-                use_cache=True
+                load_images=True  # 尝试加载图像
             )
         
         # 创建collate函数
@@ -196,6 +218,8 @@ def create_simple_dataloader(data_dir: str,
         
     except Exception as e:
         print(f"❌ 创建数据加载器失败: {e}")
+        import traceback
+        print(f"详细错误信息: {traceback.format_exc()}")
         return None
 
 
@@ -263,6 +287,12 @@ def test_dataloader(dataloader: DataLoader, max_batches: int = 3):
                 
                 if 'images' in batch:
                     print(f"    图像形状: {batch['images'].shape}")
+                
+                # 显示文本样例
+                if 'text' in batch and batch['text']:
+                    print(f"    文本样例: {batch['text'][0][:50]}...")
+                elif 'caption' in batch and batch['caption']:
+                    print(f"    文本样例: {batch['caption'][0][:50]}...")
             else:
                 print(f"    批次类型: {type(batch)}")
             
@@ -273,6 +303,8 @@ def test_dataloader(dataloader: DataLoader, max_batches: int = 3):
         
     except Exception as e:
         print(f"❌ 数据加载器测试失败: {e}")
+        import traceback
+        print(f"详细错误: {traceback.format_exc()}")
 
 
 def demo_usage():
@@ -312,6 +344,8 @@ if __name__ == "__main__":
     
     if not USE_CUSTOM_MODULES:
         print("⚠️  自定义模块不可用，使用简化版本进行演示")
+    else:
+        print("✅ 自定义模块可用，使用真实数据集")
     
     # 运行演示
     demo_usage()

@@ -871,7 +871,7 @@ class MR2DatasetAnalyzer:
             print(f"❌ 生成图像分布图失败: {e}")
     
     def _plot_annotation_analysis(self):
-        """绘制检索标注分析 - 增强错误处理"""
+        """绘制检索标注分析 - 修复版本，显示有意义的数据"""
         try:
             annotation_stats = self.analysis_results.get('annotation_stats')
             if not annotation_stats:
@@ -881,7 +881,7 @@ class MR2DatasetAnalyzer:
             fig, axes = plt.subplots(2, 3, figsize=(18, 10))
             fig.suptitle('Retrieval Annotation Analysis', fontsize=16, fontweight='bold')
             
-            # 1. 检索数量对比
+            # 1. 检索数量对比 (保持原有的正确内容)
             annotation_counts = [
                 annotation_stats.get('direct_annotations', 0),
                 annotation_stats.get('inverse_annotations', 0)
@@ -899,10 +899,87 @@ class MR2DatasetAnalyzer:
                 axes[0, 0].text(0.5, 0.5, 'No Annotation Data', ha='center', va='center', transform=axes[0, 0].transAxes)
                 axes[0, 0].set_title('Annotation Count')
             
-            # 填充其余子图的占位符内容
-            for i, j in [(0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]:
-                axes[i, j].text(0.5, 0.5, 'Analysis Placeholder', ha='center', va='center', transform=axes[i, j].transAxes)
-                axes[i, j].set_title(f'Analysis {i+1}-{j+1}')
+            # 2. 直接检索文件可用性
+            if annotation_stats.get('direct_available_files', 0) > 0 or annotation_stats.get('inverse_available_files', 0) > 0:
+                file_counts = [
+                    annotation_stats.get('direct_available_files', 0),
+                    annotation_stats.get('inverse_available_files', 0)
+                ]
+                axes[0, 1].bar(['Direct Files', 'Inverse Files'], file_counts,
+                              color=[self.colors['tertiary'], self.colors['accent']])
+                axes[0, 1].set_title('Available Annotation Files')
+                axes[0, 1].set_ylabel('Number of Files')
+                for i, v in enumerate(file_counts):
+                    if v > 0:
+                        axes[0, 1].text(i, v + 0.1, str(v), ha='center', va='bottom')
+            else:
+                axes[0, 1].text(0.5, 0.5, 'No Files Found', ha='center', va='center', transform=axes[0, 1].transAxes)
+                axes[0, 1].set_title('Available Annotation Files')
+            
+            # 3. 域名分布 (如果有直接检索数据)
+            domains = annotation_stats.get('direct_stats', {}).get('domains', Counter())
+            if domains and sum(domains.values()) > 0:
+                top_domains = domains.most_common(5)
+                domain_names, domain_counts = zip(*top_domains)
+                
+                axes[0, 2].barh(range(len(domain_names)), domain_counts, 
+                               color=self.get_color('warning', '#FFEAA7'))
+                axes[0, 2].set_yticks(range(len(domain_names)))
+                axes[0, 2].set_yticklabels(domain_names)
+                axes[0, 2].set_title('Top Domains (Direct Search)')
+                axes[0, 2].set_xlabel('Count')
+            else:
+                axes[0, 2].text(0.5, 0.5, 'No Domain Data', ha='center', va='center', transform=axes[0, 2].transAxes)
+                axes[0, 2].set_title('Top Domains (Direct Search)')
+            
+            # 4. 实体统计 (如果有反向检索数据)
+            entities_count = annotation_stats.get('inverse_stats', {}).get('entities_count', [])
+            if entities_count:
+                axes[1, 0].hist(entities_count, bins=10, color=self.get_color('info', '#DDA0DD'), alpha=0.7)
+                axes[1, 0].set_title('Entities Count Distribution')
+                axes[1, 0].set_xlabel('Number of Entities')
+                axes[1, 0].set_ylabel('Frequency')
+            else:
+                axes[1, 0].text(0.5, 0.5, 'No Entity Data', ha='center', va='center', transform=axes[1, 0].transAxes)
+                axes[1, 0].set_title('Entities Count Distribution')
+            
+            # 5. 常见实体词云 (如果有实体数据)
+            common_entities = annotation_stats.get('inverse_stats', {}).get('common_entities', Counter())
+            if common_entities and sum(common_entities.values()) > 0:
+                top_entities = common_entities.most_common(10)
+                entity_names, entity_counts = zip(*top_entities)
+                
+                axes[1, 1].barh(range(len(entity_names)), entity_counts,
+                               color=self.get_color('success', '#98FB98'))
+                axes[1, 1].set_yticks(range(len(entity_names)))
+                axes[1, 1].set_yticklabels(entity_names)
+                axes[1, 1].set_title('Most Common Entities')
+                axes[1, 1].set_xlabel('Frequency')
+            else:
+                axes[1, 1].text(0.5, 0.5, 'No Entity Data', ha='center', va='center', transform=axes[1, 1].transAxes)
+                axes[1, 1].set_title('Most Common Entities')
+            
+            # 6. 匹配类型分布
+            fully_matched = annotation_stats.get('inverse_stats', {}).get('fully_matched', [])
+            partially_matched = annotation_stats.get('inverse_stats', {}).get('partially_matched', [])
+            
+            if fully_matched or partially_matched:
+                match_types = ['Fully Matched', 'Partially Matched']
+                match_counts = [
+                    sum(fully_matched) if fully_matched else 0,
+                    sum(partially_matched) if partially_matched else 0
+                ]
+                
+                if sum(match_counts) > 0:
+                    axes[1, 2].pie(match_counts, labels=match_types, autopct='%1.1f%%',
+                                  colors=[self.colors['primary'], self.colors['secondary']])
+                    axes[1, 2].set_title('Match Types Distribution')
+                else:
+                    axes[1, 2].text(0.5, 0.5, 'No Match Data', ha='center', va='center', transform=axes[1, 2].transAxes)
+                    axes[1, 2].set_title('Match Types Distribution')
+            else:
+                axes[1, 2].text(0.5, 0.5, 'No Match Data', ha='center', va='center', transform=axes[1, 2].transAxes)
+                axes[1, 2].set_title('Match Types Distribution')
             
             plt.tight_layout()
             
@@ -920,7 +997,7 @@ class MR2DatasetAnalyzer:
             print(f"❌ 生成标注分析图失败: {e}")
     
     def _create_dashboard(self):
-        """创建综合分析仪表板 - 简化版本"""
+        """创建综合分析仪表板 - 修复版本，显示完整的仪表板"""
         try:
             fig, axes = plt.subplots(2, 3, figsize=(18, 10))
             fig.suptitle('MR2 Dataset Analysis Dashboard', fontsize=16, fontweight='bold')
@@ -928,8 +1005,9 @@ class MR2DatasetAnalyzer:
             # 获取基础统计数据
             stats = self.analysis_results.get('basic_stats', {})
             text_stats = self.analysis_results.get('text_stats', {})
+            image_stats = self.analysis_results.get('image_stats', {})
             
-            # 1. 数据集概览
+            # 1. 数据集概览 (保持原有的正确内容)
             if stats:
                 splits = list(stats.keys())
                 sizes = [stats[split]['total_samples'] for split in splits]
@@ -939,6 +1017,9 @@ class MR2DatasetAnalyzer:
                     axes[0, 0].bar(splits, sizes, color=colors[:len(splits)])
                     axes[0, 0].set_title('Dataset Overview')
                     axes[0, 0].set_ylabel('Samples')
+                    # 添加数值标签
+                    for i, v in enumerate(sizes):
+                        axes[0, 0].text(i, v + max(sizes)*0.01, str(v), ha='center', va='bottom')
                 else:
                     axes[0, 0].text(0.5, 0.5, 'No Data', ha='center', va='center', transform=axes[0, 0].transAxes)
                     axes[0, 0].set_title('Dataset Overview')
@@ -946,7 +1027,7 @@ class MR2DatasetAnalyzer:
                 axes[0, 0].text(0.5, 0.5, 'No Data', ha='center', va='center', transform=axes[0, 0].transAxes)
                 axes[0, 0].set_title('Dataset Overview')
             
-            # 2. 标签分布
+            # 2. 标签分布 (保持原有的正确内容)
             all_labels = Counter()
             for split_stats in stats.values():
                 all_labels.update(split_stats.get('label_distribution', {}))
@@ -962,7 +1043,7 @@ class MR2DatasetAnalyzer:
                 axes[0, 1].text(0.5, 0.5, 'No Labels', ha='center', va='center', transform=axes[0, 1].transAxes)
                 axes[0, 1].set_title('Label Distribution')
             
-            # 3. 文本长度分布
+            # 3. 文本长度分布 (保持原有的正确内容)
             if text_stats.get('length_distribution'):
                 axes[0, 2].hist(text_stats['length_distribution'], bins=20, color=self.get_color('accent', '#96CEB4'), alpha=0.7)
                 axes[0, 2].set_title('Text Length Distribution')
@@ -972,16 +1053,96 @@ class MR2DatasetAnalyzer:
                 axes[0, 2].text(0.5, 0.5, 'No Text Data', ha='center', va='center', transform=axes[0, 2].transAxes)
                 axes[0, 2].set_title('Text Length Distribution')
             
-            # 4-6. 填充其余位置
-            info_texts = [
-                'Language Analysis',
-                'Quality Metrics', 
-                'Summary Statistics'
-            ]
+            # 4. 语言分析 - 修复为真实的语言分布
+            lang_data = text_stats.get('language_distribution', {})
+            if lang_data and sum(lang_data.values()) > 0:
+                languages = list(lang_data.keys())
+                lang_counts = list(lang_data.values())
+                colors = [self.colors['primary'], self.colors['secondary'], self.colors['tertiary']]
+                
+                axes[1, 0].pie(lang_counts, labels=languages, autopct='%1.1f%%', colors=colors[:len(languages)])
+                axes[1, 0].set_title('Language Analysis')
+            else:
+                axes[1, 0].text(0.5, 0.5, 'No Language Data', ha='center', va='center', transform=axes[1, 0].transAxes)
+                axes[1, 0].set_title('Language Analysis')
             
-            for i, info_text in enumerate(info_texts):
-                axes[1, i].text(0.5, 0.5, info_text, ha='center', va='center', transform=axes[1, i].transAxes)
-                axes[1, i].set_title(info_text)
+            # 5. 质量指标 - 显示数据完整性
+            if stats:
+                quality_metrics = []
+                quality_values = []
+                
+                # 计算各种完整性指标
+                total_samples = sum(s.get('total_samples', 0) for s in stats.values())
+                total_images = sum(s.get('has_image', 0) for s in stats.values())
+                total_direct = sum(s.get('has_direct_annotation', 0) for s in stats.values())
+                total_inverse = sum(s.get('has_inverse_annotation', 0) for s in stats.values())
+                
+                if total_samples > 0:
+                    quality_metrics = ['Image\nCompleteness', 'Direct\nRetrieval', 'Inverse\nRetrieval', 'Text\nAvailability']
+                    quality_values = [
+                        (total_images / total_samples) * 100,
+                        (total_direct / total_samples) * 100,
+                        (total_inverse / total_samples) * 100,
+                        (text_stats.get('total_texts', 0) / total_samples) * 100 if total_samples > 0 else 0
+                    ]
+                    
+                    bars = axes[1, 1].bar(quality_metrics, quality_values, 
+                                         color=[self.colors['primary'], self.colors['secondary'], 
+                                               self.colors['tertiary'], self.colors['accent']])
+                    axes[1, 1].set_title('Quality Metrics')
+                    axes[1, 1].set_ylabel('Completeness (%)')
+                    axes[1, 1].set_ylim(0, 100)
+                    
+                    # 添加百分比标签
+                    for bar, value in zip(bars, quality_values):
+                        height = bar.get_height()
+                        axes[1, 1].text(bar.get_x() + bar.get_width()/2., height + 1,
+                                        f'{value:.1f}%', ha='center', va='bottom', fontsize=10)
+                else:
+                    axes[1, 1].text(0.5, 0.5, 'No Quality Data', ha='center', va='center', transform=axes[1, 1].transAxes)
+                    axes[1, 1].set_title('Quality Metrics')
+            else:
+                axes[1, 1].text(0.5, 0.5, 'No Quality Data', ha='center', va='center', transform=axes[1, 1].transAxes)
+                axes[1, 1].set_title('Quality Metrics')
+            
+            # 6. 汇总统计 - 显示关键数字
+            axes[1, 2].axis('off')
+            
+            # 收集汇总信息
+            summary_info = []
+            if stats:
+                total_samples = sum(s.get('total_samples', 0) for s in stats.values())
+                summary_info.append(f"Total Samples: {total_samples:,}")
+                
+                # 标签分布摘要
+                if all_labels:
+                    max_label = max(all_labels, key=all_labels.get)
+                    max_label_name = self.label_mapping.get(max_label, f'Label {max_label}')
+                    summary_info.append(f"Most Common: {max_label_name}")
+            
+            if text_stats:
+                total_texts = text_stats.get('total_texts', 0)
+                summary_info.append(f"Text Items: {total_texts:,}")
+                
+                if text_stats.get('length_distribution'):
+                    avg_length = np.mean(text_stats['length_distribution'])
+                    summary_info.append(f"Avg Length: {avg_length:.0f} chars")
+            
+            if image_stats:
+                valid_images = image_stats.get('valid_images', 0)
+                summary_info.append(f"Valid Images: {valid_images:,}")
+            
+            # 显示汇总信息
+            if summary_info:
+                summary_text = '\n'.join(summary_info)
+                axes[1, 2].text(0.1, 0.7, f'Summary Statistics:\n\n{summary_text}', 
+                               transform=axes[1, 2].transAxes, fontsize=14,
+                               verticalalignment='top', 
+                               bbox=dict(boxstyle="round,pad=0.5", facecolor="lightblue", alpha=0.7))
+            else:
+                axes[1, 2].text(0.5, 0.5, 'No Summary Data', ha='center', va='center', transform=axes[1, 2].transAxes)
+            
+            axes[1, 2].set_title('Summary Statistics')
             
             plt.tight_layout()
             
@@ -1135,7 +1296,6 @@ class MR2DatasetAnalyzer:
             print(f"❌ 分析过程中出现错误: {e}")
             print("这可能是由于数据文件缺失或格式问题导致的")
             return {}
-
 
 # 主执行代码
 if __name__ == "__main__":
