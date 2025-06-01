@@ -6,11 +6,11 @@
 
 | 配置文件 | 学习重点 | 涵盖技术 |
 |---------|----------|----------|
-| [📊 数据配置](data_configs.md) | 数据处理pipeline设计 | 多模态数据、预处理策略、验证机制 |
-| [🤖 模型配置](model_configs.md) | 模型选择与参数设计 | 传统ML到大模型的完整技术栈 |
-| [🏋️ 训练配置](training_configs.md) | 训练策略与优化技巧 | 从基础训练到分布式的全方位实践 |
-| [📋 模型支持列表](supported_models.md) | 当前主流模型技术 | 2024-2025年度推荐技术栈 |
-| [🔍 RAG配置](rag_configs.md) | 检索增强生成实践 | 现代AI应用的核心技术 |
+| [📊 数据配置](code_docs/config/data_configs.md) | 数据处理pipeline设计 | 多模态数据、预处理策略、验证机制 |
+| [🤖 模型配置](code_docs/config/model_configs.md) | 模型选择与参数设计 | 传统ML到大模型的完整技术栈 |
+| [🏋️ 训练配置](code_docs/config/training_configs.md) | 训练策略与优化技巧 | 从基础训练到分布式的全方位实践 |
+| [📋 模型支持列表](code_docs/config/supported_models.md) | 当前主流模型技术 | 2024-2025年度推荐技术栈 |
+| [🔍 RAG配置](code_docs/config/rag_configs.md) | 检索增强生成实践 | 现代AI应用的核心技术 |
 
 ## 🎯 学习价值
 
