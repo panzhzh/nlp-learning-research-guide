@@ -436,4 +436,4 @@ outputs/data_utils/
 
 ---
 
-**[⬅️ 数据加载器](data_loaders.md) | [演示脚本 ➡️](demo.md)**
+**[⬅️ 数据加载器](code_docs/data_loaders/data_loaders.md) | [演示脚本 ➡️](code_docs/data_loaders/demo.md)**

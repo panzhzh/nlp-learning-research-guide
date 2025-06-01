@@ -11,10 +11,10 @@
 ### 主要模块文件
 | 文件名 | 功能说明 | 状态 |
 |-------|----------|------|
-| [**mr2_dataset.py**](mr2_dataset.md) | 严格的MR2数据集PyTorch类实现 | ✅ 已实现 |
-| [**data_loaders.py**](data_loaders.md) | 强制验证的数据加载器配置 | ✅ 已实现 |
-| [**mr2_analysis.py**](mr2_analysis.md) | 完整的数据集分析和可视化工具 | ✅ 已实现 |
-| [**demo.py**](demo.md) | 简化的演示脚本 | ✅ 已实现 |
+| [**mr2_dataset.py**](code_docs/data_loaders/mr2_dataset.md) | 严格的MR2数据集PyTorch类实现 | ✅ 已实现 |
+| [**data_loaders.py**](code_docs/data_loaders/data_loaders.md) | 强制验证的数据加载器配置 | ✅ 已实现 |
+| [**mr2_analysis.py**](code_docs/data_loaders/mr2_analysis.md) | 完整的数据集分析和可视化工具 | ✅ 已实现 |
+| [**demo.py**](code_docs/data_loaders/demo.md) | 简化的演示脚本 | ✅ 已实现 |
 
 ### 模块初始化 (__init__.py)
 ```python
@@ -245,4 +245,4 @@ except RuntimeError:
 
 ---
 
-**[⬅️ RAG配置](../config/rag_configs.md) | [MR2数据集 ➡️](mr2_dataset.md)**
+**[⬅️ RAG配置](code_docs/config/) | [MR2数据集 ➡️](code_docs/data_loaders/mr2_dataset.md)**
