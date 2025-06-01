@@ -346,4 +346,4 @@ if rag_config_path.exists():
 
 ---
 
-**[⬅️ 支持模型列表](supported_models.md) | [数据工具模块 ➡️](../data_utils/README.md)**
+**[⬅️ 支持模型列表](code_docs/config/supported_models.md) | [数据工具模块 ➡️](code_docs/data_utils/)**

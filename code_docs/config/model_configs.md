@@ -190,4 +190,4 @@
 
 ---
 
-**[⬅️ 数据配置](data_configs.md) | [🏋️ 训练配置 ➡️](training_configs.md)**
+**[⬅️ 数据配置](code_docs/config/data_configs.md) | [🏋️ 训练配置 ➡️](code_docs/config/training_configs.md)**

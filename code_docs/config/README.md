@@ -54,4 +54,4 @@ get_config_manager()  # 确保整个项目使用同一配置实例
 
 ---
 
-**[🏠 返回主页](../README.md) | [📊 数据配置 ➡️](data_configs.md)**
+**[🏠 返回主页](code_docs/config) | [📊 数据配置 ➡️](code_docs/config/data_configs.md)**

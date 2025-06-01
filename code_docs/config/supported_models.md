@@ -253,4 +253,4 @@
 
 ---
 
-**[⬅️ 训练配置](training_configs.md) | [🔍 RAG配置 ➡️](rag_configs.md)**
+**[⬅️ 训练配置](code_docs/config/training_configs.md) | [🔍 RAG配置 ➡️](code_docs/config/rag_configs.md)**

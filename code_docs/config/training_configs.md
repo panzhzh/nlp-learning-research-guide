@@ -256,4 +256,4 @@
 
 ---
 
-**[⬅️ 模型配置](model_configs.md) | [📋 支持模型列表 ➡️](supported_models.md)**
+**[⬅️ 模型配置](code_docs/config/model_configs.md) | [📋 支持模型列表 ➡️](code_docs/config/supported_models.md)**

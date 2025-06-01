@@ -153,4 +153,4 @@
 
 ---
 
-**[⬅️ 配置概览](README.md) | [🤖 模型配置 ➡️](model_configs.md)**
+**[⬅️ 配置概览](code_docs/config/README.md) | [🤖 模型配置 ➡️](code_docs/config/model_configs.md)**
