@@ -80,7 +80,7 @@ def run_explanation_demo():
     print("=" * 60)
 
     # 创建用于保存可视化结果的目录
-    output_visualization_dir = project_root / "output" / "explainable_ai_visuals"
+    output_visualization_dir = project_root / "outputs" / "explainable_ai_visuals"
     output_visualization_dir.mkdir(parents=True, exist_ok=True)
     print(f"可视化结果将保存到: {output_visualization_dir}")
 
