@@ -56,3 +56,4 @@ Thumbs.db
 data/*
 !data/*.md
 outputs/*
+wandb/*
