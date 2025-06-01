@@ -8,9 +8,9 @@
 
 ## 🗂️ 项目结构
 
-- **[📖 文档](https://panzhzh.github.io/nlp-learning-research-guide/docs)** - 在线文档网站
-- **[💻 代码](https://panzhzh.github.io/nlp-learning-research-guide/code_docs)** - 配套实现代码
-- **[🔗 资源](https://panzhzh.github.io/nlp-learning-research-guide/assets)** - 相关资源文件
+- **[📖 文档](https://panzhzh.github.io/nlp-learning-research-guide/#/docs)** - 在线文档网站
+- **[💻 代码](https://panzhzh.github.io/nlp-learning-research-guide/#/code_docs)** - 配套实现代码
+- **[🔗 资源](https://panzhzh.github.io/nlp-learning-research-guide/#/assets)** - 相关资源文件
 
 ## 🚀 快速开始
 
