@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: ipanzhzh
-# datasets/__init__.py
+# data_utils/__init__.py
 
 """
 数据集模块

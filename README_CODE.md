@@ -45,7 +45,7 @@ nlp-learning-research-guide/
 │   ├── image_processing.py            # MR2图像预处理和特征提取
 │   ├── graph_construction.py          # MR2社交图构建和图特征工程
 │   └── data_augmentation.py           # MR2数据增强策略
-├── datasets/                          # 📚 MR2数据集加载
+├── data_utils/                          # 📚 MR2数据集加载
 │   ├── __init__.py
 │   ├── mr2_dataset.py                 # MR2数据集PyTorch类
 │   └── data_loaders.py                # MR2数据加载器配置
@@ -255,11 +255,11 @@ pip install -r requirements.txt
 #### 1. 文本分类
 ```python
 from models.pretrained.encoder_models import EncoderModel
-from datasets.mr2_dataset import MR2Dataset
+from data_utils.mr2_dataset import MR2Dataset
 from training.base_trainer import Trainer
 
 # 加载数据
-dataset = MR2Dataset(data_dir='../datasets/MR2')
+dataset = MR2Dataset(data_dir='../data_utils/MR2')
 
 # 创建模型 (支持多种BERT变体)
 model = EncoderModel(

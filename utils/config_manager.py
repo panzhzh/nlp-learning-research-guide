@@ -172,9 +172,9 @@ class ConfigManager:
     def create_output_directories(self):
         """创建输出目录结构"""
         output_dirs = [
-            'outputs/datasets/charts',
-            'outputs/datasets/reports',
-            'outputs/datasets/analysis',
+            'outputs/data_utils/charts',
+            'outputs/data_utils/reports',
+            'outputs/data_utils/analysis',
             'outputs/models',
             'outputs/logs'
         ]
@@ -297,7 +297,7 @@ if __name__ == "__main__":
         # 测试各种配置获取
         print(f"数据目录: {config_mgr.get_data_dir()}")
         print(f"标签映射: {config_mgr.get_label_mapping()}")
-        print(f"图表输出路径: {config_mgr.get_output_path('datasets', 'charts')}")
+        print(f"图表输出路径: {config_mgr.get_output_path('data_utils', 'charts')}")
         
         print("✅ 简化配置管理器测试完成")
         

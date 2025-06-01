@@ -1,0 +1,244 @@
+# RAG (检索增强生成) 配置文件
+# Author: ipanzhzh
+# config/rag_configs.yaml
+
+# RAG系统配置
+rag_system:
+  # 系统名称和版本
+  name: "MR2-RAG-System"
+  version: "1.0.0"
+  description: "基于Qwen3-0.6B的谣言检测RAG系统"
+
+# 知识库配置
+knowledge_base:
+  # 知识来源
+  sources:
+    - "predefined"     # 预定义知识
+    - "dataset"        # 数据集样本
+    # - "external"     # 外部知识源(可扩展)
+  
+  # 预定义知识配置
+  predefined:
+    enabled: true
+    categories:
+      - "credibility"           # 可信度判断
+      - "language_pattern"      # 语言模式
+      - "rumor_pattern"        # 谣言特征
+      - "verification_method"   # 验证方法
+      - "domain_specific"      # 领域专知
+  
+  # 数据集知识配置
+  dataset:
+    enabled: true
+    max_samples: 200          # 最大样本数
+    min_text_length: 20       # 最小文本长度
+    sample_strategy: "balanced"  # 采样策略
+  
+  # 文档索引配置
+  indexing:
+    method: "semantic"        # semantic, tfidf
+    embedding_model: "all-MiniLM-L6-v2"
+    index_type: "faiss"       # faiss, sklearn
+    normalize_embeddings: true
+    
+    # TF-IDF配置(备用)
+    tfidf:
+      max_features: 5000
+      ngram_range: [1, 2]
+      stop_words: "english"
+
+# 检索配置
+retrieval:
+  # 检索参数
+  default_top_k: 5           # 默认检索文档数
+  max_top_k: 10             # 最大检索文档数
+  min_similarity: 0.1       # 最小相似度阈值
+  
+  # 检索策略
+  strategy: "semantic"       # semantic, keyword, hybrid
+  rerank: true              # 是否重排序
+  deduplicate: true         # 是否去重
+  
+  # 文档过滤
+  filtering:
+    min_score: 0.0          # 最小相关度分数
+    max_documents: 10       # 最大文档数
+    prefer_types: []        # 偏好文档类型
+
+# 生成配置
+generation:
+  # LLM模型配置
+  model:
+    name: "Qwen/Qwen3-0.6B"
+    use_lora: true
+    load_in_4bit: false
+    max_length: 512
+  
+  # 生成参数
+  parameters:
+    max_new_tokens: 200
+    temperature: 0.3
+    do_sample: true
+    top_p: 0.9
+    repetition_penalty: 1.1
+  
+  # 提示模板配置
+  prompts:
+    language: "mixed"         # chinese, english, mixed
+    style: "formal"          # formal, conversational, detailed
+    include_examples: false  # 是否包含示例
+    max_context_length: 1000 # 最大上下文长度
+
+# RAG增强配置
+enhancement:
+  # 多查询RAG
+  multi_query:
+    enabled: true
+    max_variants: 3          # 最大查询变体数
+    variant_strategies:
+      - "keyword_extraction"
+      - "question_reformulation"
+      - "domain_specific"
+  
+  # 迭代RAG
+  iterative:
+    enabled: true
+    max_iterations: 3        # 最大迭代次数
+    confidence_threshold: 0.8 # 置信度阈值
+    improvement_threshold: 0.05 # 改进阈值
+  
+  # 自适应检索
+  adaptive:
+    enabled: true
+    adjust_top_k: true       # 动态调整检索数量
+    context_aware: true      # 上下文感知
+    feedback_learning: true  # 反馈学习
+
+# 评估配置
+evaluation:
+  # 评估指标
+  metrics:
+    - "accuracy"
+    - "precision"
+    - "recall"
+    - "f1_score"
+    - "confidence"
+  
+  # 对比评估
+  comparison:
+    baseline_methods:
+      - "standard_llm"       # 标准LLM方法
+      - "simple_retrieval"   # 简单检索
+    
+  # 性能监控
+  monitoring:
+    track_retrieval_time: true
+    track_generation_time: true
+    track_memory_usage: false
+    log_failed_cases: true
+
+# 缓存配置
+cache:
+  # 嵌入缓存
+  embeddings:
+    enabled: true
+    max_size: 10000         # 最大缓存条目
+    ttl: 3600              # 生存时间(秒)
+  
+  # 检索结果缓存
+  retrieval_results:
+    enabled: true
+    max_size: 1000
+    ttl: 1800
+  
+  # 生成结果缓存
+  generation_results:
+    enabled: false          # 默认关闭
+    max_size: 500
+    ttl: 900
+
+# 输出配置
+output:
+  # 保存路径
+  save_paths:
+    knowledge_base: "outputs/models/llms/rag_knowledge_base.json"
+    evaluation_results: "outputs/models/llms/rag_evaluation.json"
+    logs: "outputs/logs/rag_system.log"
+  
+  # 结果格式
+  result_format:
+    include_retrieved_docs: true
+    include_confidence: true
+    include_timing: false
+    include_debug_info: false
+  
+  # 日志配置
+  logging:
+    level: "INFO"           # DEBUG, INFO, WARNING, ERROR
+    console_output: true
+    file_output: true
+    max_log_size: "10MB"
+
+# 安全和隐私配置
+security:
+  # 数据隐私
+  privacy:
+    anonymize_logs: false   # 日志匿名化
+    mask_sensitive_data: false # 敏感数据掩码
+  
+  # 内容过滤
+  content_filtering:
+    enabled: false          # 内容过滤
+    filter_personal_info: false # 过滤个人信息
+    filter_harmful_content: false # 过滤有害内容
+
+# 实验配置
+experimental:
+  # 新功能开关
+  features:
+    multi_modal_rag: false   # 多模态RAG
+    cross_lingual_rag: false # 跨语言RAG
+    temporal_rag: false      # 时序RAG
+    federated_rag: false     # 联邦RAG
+  
+  # A/B测试
+  ab_testing:
+    enabled: false
+    test_ratio: 0.1         # 测试流量比例
+    control_group: "standard_rag"
+    test_group: "enhanced_rag"
+
+# 资源限制
+resource_limits:
+  # 内存限制
+  memory:
+    max_knowledge_base_size: "1GB"
+    max_cache_size: "500MB"
+    max_model_size: "5GB"
+  
+  # 计算限制
+  compute:
+    max_concurrent_requests: 10
+    max_retrieval_time: 5.0   # 秒
+    max_generation_time: 30.0 # 秒
+    
+  # 存储限制
+  storage:
+    max_log_files: 10
+    max_result_files: 100
+    cleanup_interval: 24     # 小时
+
+# 开发和调试配置
+development:
+  # 调试模式
+  debug:
+    enabled: false
+    verbose_logging: false
+    save_intermediate_results: false
+    profile_performance: false
+  
+  # 测试配置
+  testing:
+    use_mock_data: false    # 使用模拟数据
+    test_data_size: 100     # 测试数据大小
+    quick_test_mode: false  # 快速测试模式

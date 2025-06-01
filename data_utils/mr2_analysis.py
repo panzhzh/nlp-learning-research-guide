@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: ipanzhzh
-# datasets/mr2_analysis.py
+# data_utils/mr2_analysis.py
 
 """
 MR2多模态谣言检测数据集深度分析
@@ -60,9 +60,9 @@ class MR2DatasetAnalyzer:
             self.config_manager.create_output_directories()
             
             self.data_dir = get_data_dir()
-            self.charts_dir = get_output_path('datasets', 'charts')
-            self.reports_dir = get_output_path('datasets', 'reports')
-            self.analysis_dir = get_output_path('datasets', 'analysis')
+            self.charts_dir = get_output_path('data_utils', 'charts')
+            self.reports_dir = get_output_path('data_utils', 'reports')
+            self.analysis_dir = get_output_path('data_utils', 'analysis')
             
             analysis_config = get_analysis_config()
             viz_config = analysis_config.get('visualization', {})
@@ -94,7 +94,7 @@ class MR2DatasetAnalyzer:
         
         # 存储分析结果
         self.analysis_results = {}
-        self.datasets = {}
+        self.data_utils = {}
     
     def _default_colors(self):
         """默认颜色配置"""
@@ -197,7 +197,7 @@ class MR2DatasetAnalyzer:
             except Exception as e:
                 print(f"❌ 创建演示数据失败: {e}")
         
-        self.datasets = {}
+        self.data_utils = {}
         splits = ['train', 'val', 'test']
         
         for split in splits:
@@ -205,18 +205,18 @@ class MR2DatasetAnalyzer:
                 file_path = self.data_dir / f'dataset_items_{split}.json'
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
-                        self.datasets[split] = json.load(f)
-                    print(f"✅ 加载 {split} 数据: {len(self.datasets[split])} 条")
+                        self.data_utils[split] = json.load(f)
+                    print(f"✅ 加载 {split} 数据: {len(self.data_utils[split])} 条")
                 except Exception as e:
                     print(f"❌ 加载 {split} 数据失败: {e}")
                     
-        return self.datasets
+        return self.data_utils
     
     def basic_statistics(self):
         """基础统计分析"""
         print("\n📊 === 基础统计分析 ===")
         
-        if not self.datasets:
+        if not self.data_utils:
             print("⚠️  没有可用数据进行统计分析")
             self.analysis_results['basic_stats'] = {}
             return {}
@@ -224,7 +224,7 @@ class MR2DatasetAnalyzer:
         stats = {}
         total_samples = 0
         
-        for split, data in self.datasets.items():
+        for split, data in self.data_utils.items():
             split_stats = {
                 'total_samples': len(data),
                 'label_distribution': Counter(),
@@ -273,7 +273,7 @@ class MR2DatasetAnalyzer:
         """文本内容分析"""
         print("\n📝 === 文本内容分析 ===")
         
-        if not self.datasets:
+        if not self.data_utils:
             print("⚠️  没有可用数据进行文本分析")
             self.analysis_results['text_stats'] = {}
             return {}
@@ -290,7 +290,7 @@ class MR2DatasetAnalyzer:
         
         all_texts = []
         
-        for split, data in self.datasets.items():
+        for split, data in self.data_utils.items():
             for item_id, item in data.items():
                 caption = item.get('caption', '').strip()
                 if caption:
@@ -365,7 +365,7 @@ class MR2DatasetAnalyzer:
         """图像数据分析"""
         print("\n🖼️  === 图像数据分析 ===")
         
-        if not self.datasets:
+        if not self.data_utils:
             print("⚠️  没有可用数据进行图像分析")
             self.analysis_results['image_stats'] = {}
             return {}
@@ -379,7 +379,7 @@ class MR2DatasetAnalyzer:
             'file_sizes': []
         }
         
-        for split, data in self.datasets.items():
+        for split, data in self.data_utils.items():
             for item_id, item in data.items():
                 if 'image_path' in item:
                     image_stats['total_images'] += 1
@@ -423,7 +423,7 @@ class MR2DatasetAnalyzer:
         """检索标注数据分析"""
         print("\n🔍 === 检索标注分析 ===")
         
-        if not self.datasets:
+        if not self.data_utils:
             print("⚠️  没有可用数据进行标注分析")
             self.analysis_results['annotation_stats'] = {
                 'direct_annotations': 0,
@@ -452,7 +452,7 @@ class MR2DatasetAnalyzer:
             }
         }
         
-        for split, data in self.datasets.items():
+        for split, data in self.data_utils.items():
             for item_id, item in data.items():
                 # 直接检索分析
                 if 'direct_path' in item:

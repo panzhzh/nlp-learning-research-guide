@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: ipanzhzh
-# datasets/data_loaders.py
+# data_utils/data_loaders.py
 
 """
 强制使用真实数据集的数据加载器
@@ -34,8 +34,8 @@ except ImportError:
     except ImportError:
         try:
             import sys
-            datasets_path = current_file.parent
-            sys.path.insert(0, str(datasets_path))
+            data_utils_path = current_file.parent
+            sys.path.insert(0, str(data_utils_path))
             from mr2_dataset import MR2Dataset
             USE_CUSTOM_MODULES = True
             print("✅ 成功导入自定义模块 (路径导入)")

@@ -5,16 +5,21 @@
 
 """
 大语言模型模块
-包含开源LLM、提示工程和少样本学习等功能
+
+包含开源LLM、提示工程、少样本学习和RAG集成等功能
 """
 
 from .open_source_llms import QwenRumorClassifier
 from .prompt_engineering import RumorPromptTemplate, PromptManager
 from .few_shot_learning import FewShotLearner
+from .rag_integration import RAGRumorDetector, KnowledgeBase, AdvancedRAGFeatures
 
 __all__ = [
     'QwenRumorClassifier',
     'RumorPromptTemplate', 
     'PromptManager',
-    'FewShotLearner'
+    'FewShotLearner',
+    'RAGRumorDetector',
+    'KnowledgeBase',
+    'AdvancedRAGFeatures'
 ]

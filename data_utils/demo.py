@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: ipanzhzh
-# datasets/demo.py
+# data_utils/demo.py
 
 """
 数据集分析演示 - 简化版

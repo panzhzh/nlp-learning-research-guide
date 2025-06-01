@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: ipanzhzh
-# datasets/mr2_dataset.py
+# data_utils/mr2_dataset.py
 
 """
 严格的MR2数据集类
@@ -22,7 +22,7 @@ warnings.filterwarnings('ignore')
 
 # 添加项目路径
 current_file = Path(__file__).resolve()
-project_root = current_file.parent.parent.parent
+project_root = current_file.parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 

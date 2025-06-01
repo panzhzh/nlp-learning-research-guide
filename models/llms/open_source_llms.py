@@ -39,7 +39,7 @@ if str(project_root) not in sys.path:
 
 # 导入项目模块
 try:
-    from datasets.data_loaders import create_all_dataloaders
+    from data_utils.data_loaders import create_all_dataloaders
     from utils.config_manager import get_config_manager, get_output_path
     from models.llms.prompt_engineering import RumorPromptTemplate, PromptManager
     USE_PROJECT_MODULES = True

@@ -34,7 +34,7 @@ try:
     from .basic_gnn_layers import BasicGNN, GNNClassifier
     from .social_graph_builder import SocialGraphBuilder, GraphFeatureExtractor
     from utils.config_manager import get_config_manager, get_output_path
-    from datasets.data_loaders import create_all_dataloaders
+    from data_utils.data_loaders import create_all_dataloaders
     USE_PROJECT_MODULES = True
     print("✅ 成功导入项目模块 (相对导入)")
 except ImportError as e:
@@ -45,7 +45,7 @@ except ImportError as e:
         # 尝试导入项目配置
         try:
             from utils.config_manager import get_config_manager, get_output_path
-            from datasets.data_loaders import create_all_dataloaders
+            from data_utils.data_loaders import create_all_dataloaders
             USE_PROJECT_MODULES = True
             print("✅ 成功导入本地模块 (包含项目配置)")
         except ImportError:
