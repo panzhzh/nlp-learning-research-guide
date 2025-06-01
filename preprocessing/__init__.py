@@ -5,11 +5,14 @@
 
 """
 预处理模块
-包含文本、图像、图结构等预处理组件
+
+包含文本和图像处理功能
 """
 
-try:
-    from .text_processing import TextProcessor
-    from .image_processing import ImageProcessor
-except ImportError as e:
-    print(f"⚠️  导入预处理模块失败: {e}")
+from .text_processing import TextProcessor
+from .image_processing import ImageProcessor
+
+__all__ = [
+    'TextProcessor',
+    'ImageProcessor'
+]
