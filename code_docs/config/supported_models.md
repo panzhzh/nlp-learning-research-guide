@@ -1,88 +1,256 @@
 # 支持模型列表 Supported Models
 
-> 📋 **项目支持的所有模型及其兼容性信息**
+> 📋 **2024-2025年度AI技术栈完整指南**
 
-## 📋 功能说明
+## 🎯 学习重点
 
-`supported_models.yaml` 列出了项目中所有可用的模型，包括实现路径、支持任务、输入类型等详细信息。
+掌握**从传统ML到最新大模型**的完整技术谱系，理解不同模型的适用场景和发展趋势。
 
-## 🎯 主要配置块
+## 🏛️ 模型技术分层
 
-### traditional_models - 传统机器学习模型
-- **分类器列表**: SVM, RandomForest, NaiveBayes, LogisticRegression, XGBoost
-- **实现信息**: sklearn/xgboost实现，类路径
-- **支持任务**: 二分类、多分类
-- **特征要求**: text_features
+### 传统机器学习 📊
+| 算法类型 | 代表模型 | 核心优势 | 最佳应用场景 |
+|---------|----------|----------|-------------|
+| **线性模型** | SVM ✅, LR ✅ | 🔍 可解释性强 | 基线模型、监管要求 |
+| **树模型** | RF ✅, XGBoost ✅ | 🎯 特征自动选择 | 表格数据、竞赛首选 |
+| **概率模型** | NB ✅ | ⚡ 训练速度快 | 文本分类、实时系统 |
+| **集成学习** | Voting, Stacking | 🏆 性能稳定提升 | 生产环境、风险控制 |
 
-### neural_network_models - 神经网络模型
-- **文本模型**: TextCNN, BiLSTM, TextRCNN, HierarchicalAttention
-- **图像模型**: ImageCNN, ResNet系列
-- **实现框架**: PyTorch
-- **输入类型**: text, image
+### 深度学习架构 🧠
+```
+神经网络技术演进:
+├── 📝 文本建模:
+│   ├── 早期: TextCNN ✅, BiLSTM ✅ 
+│   ├── 注意力: Transformer, BERT
+│   └── 现代: GPT, LLaMA, Qwen
+├── 🖼️ 图像理解:
+│   ├── 经典: ResNet ✅, EfficientNet
+│   ├── 注意力: Vision Transformer
+│   └── 生成: DALL-E, Midjourney
+├── 🌐 图数据:
+│   ├── 基础: GCN ✅, GAT ✅, GraphSAGE ✅
+│   ├── 进阶: GraphTransformer
+│   └── 预训练: GraphMAE, GraphBERT
+└── 🎨 多模态:
+    ├── 对比: CLIP ✅, ALIGN
+    ├── 生成: DALL-E, Stable Diffusion
+    └── 统一: GPT-4V, Gemini
+```
 
-### pretrained_models - 预训练模型
-- **文本编码器**:
-  - English: BERT, RoBERTa, ALBERT, ELECTRA, DeBERTa
-  - Chinese: Chinese-BERT-wwm, Chinese-RoBERTa-wwm, MacBERT, ERNIE
-  - Multilingual: mBERT, XLM-RoBERTa
-- **生成模型**: GPT-2, T5, BART
-- **模型规格**: max_length, hidden_size等
+## 🤗 预训练模型生态
 
-### multimodal_models - 多模态模型
-- **视觉-语言模型**: CLIP, Chinese-CLIP, BLIP, ALBEF, FLAVA
-- **输入类型**: text + image
-- **图像尺寸**: 224x224, 384x384等
-- **文本长度**: 77, 512等限制
+### 文本编码器发展脉络
+| 发展阶段 | 代表模型 | 核心创新 | 技术影响 |
+|---------|----------|----------|----------|
+| **BERT时代** | BERT → RoBERTa → DeBERTa ✅ | 双向编码 | 🔥 NLP革命起点 |
+| **效率优化** | ALBERT → DistilBERT | 参数共享 | 📱 移动端部署 |
+| **规模扩大** | T5 → PaLM → PaLM-2 | 模型规模化 | 💪 能力质变 |
+| **中文优化** | Chinese-BERT ✅ → GLM → ChatGLM | 中文特化 | 🌏 本土化适配 |
 
-### graph_models - 图神经网络模型
-- **基础GNN**: GCN, GAT, GraphSAGE, GIN
-- **高级GNN**: GraphTransformer, GraphBERT
-- **实现框架**: torch_geometric
-- **支持任务**: node_classification, graph_classification
+### 2024-2025推荐技术栈
 
-### large_language_models - 大语言模型
-- **开源LLM**: ChatGLM2-6B, Qwen-7B-Chat, Baichuan2-7B-Chat
-- **多模态LLM**: LLaVA, BLIP-2
-- **模型规格**: 参数量, max_length
-- **支持任务**: chat, classification, VQA
+**🚀 最新推荐模型**:
+```
+现代AI技术选择:
+├── 💬 对话交互:
+│   ├── 开源首选: Qwen-7B/14B ✅, LLaMA-2/3
+│   ├── 中文优化: ChatGLM3/4 ✅, Baichuan2 ✅
+│   ├── 轻量级: Qwen-1.8B ✅, Phi-3
+│   └── 商业级: GPT-4, Claude-3, Gemini-Pro
+├── 🎨 多模态理解:
+│   ├── 视觉语言: LLaVA-1.5/1.6 ✅, GPT-4V
+│   ├── 中文多模态: Qwen-VL ✅, CogVLM
+│   ├── 视频理解: Video-ChatGPT, VideoBERT
+│   └── 音频处理: Whisper, SpeechT5
+├── 🔧 专业工具:
+│   ├── 代码生成: CodeLlama, CodeT5+, CodeGeeX
+│   ├── 数学推理: MetaMath, WizardMath
+│   ├── 科学研究: Galactica, BioGPT
+│   └── 嵌入模型: BGE-M3, E5-large ✅
+└── ⚡ 高效部署:
+    ├── 边缘计算: MobileBERT, TinyLlama
+    ├── 量化优化: GPTQ, AWQ, GGUF
+    ├── 推理加速: vLLM, TensorRT-LLM
+    └── 服务框架: FastChat, Ollama
+```
 
-### specialized_models - 专用模型
-- **谣言检测**: RumorDetectionTransformer
-- **社交媒体**: SocialMediaBERT
-- **领域专用**: 针对特定任务优化
+## 🎨 多模态技术前沿
 
-### ensemble_models - 集成模型
-- **投票集成**: VotingClassifier
-- **堆叠集成**: StackingClassifier  
-- **多模态集成**: MultiModalEnsemble
-- **支持基模型**: 传统、神经网络、预训练模型
+### 视觉-语言模型演进
+| 技术代 | 时间 | 代表模型 | 突破点 |
+|-------|------|----------|--------|
+| **1.0时代** | 2021 | CLIP ✅, ALIGN | 🔗 对比学习范式 |
+| **2.0时代** | 2022 | BLIP ✅, CoCa | 🎯 生成+理解统一 |
+| **3.0时代** | 2023 | GPT-4V, Flamingo | 🧠 少样本学习能力 |
+| **4.0时代** | 2024 | Claude-3, Gemini-1.5 | 🌟 原生多模态设计 |
 
-## 🔍 兼容性信息
+### 多模态应用矩阵
+```
+多模态技术应用:
+├── 🖼️ 图像理解:
+│   ├── 分类: CLIP ✅, Chinese-CLIP ✅
+│   ├── 检测: YOLO, SAM, GroundingDINO
+│   ├── 生成: DALL-E 3, Midjourney, SD-XL
+│   └── 编辑: InstructPix2Pix, ControlNet
+├── 📹 视频分析:
+│   ├── 理解: Video-ChatGPT, VideoBERT
+│   ├── 生成: Sora, Runway, Pika
+│   ├── 编辑: DaVinci Resolve AI
+│   └── 互动: Interactive Video
+├── 🎵 音频处理:
+│   ├── 识别: Whisper ✅, SpeechT5
+│   ├── 生成: MusicLM, AudioLM
+│   ├── 克隆: VALL-E, Tortoise-TTS
+│   └── 分离: Spleeter, LALAL.AI
+└── 🤖 具身智能:
+    ├── 机器人: RT-1, RT-2, PaLM-E
+    ├── 自动驾驶: Tesla FSD, Waymo
+    ├── AR/VR: Meta Reality Labs
+    └── 游戏AI: OpenAI Five, AlphaStar
+```
 
-### compatibility_matrix - 兼容性矩阵
-- **任务兼容**: classification, regression, generation, retrieval
-- **输入类型**: text_only, image_only, multimodal, graph
-- **语言支持**: english, chinese, mixed
+## 🧠 大语言模型格局
 
-### recommended_models - 推荐模型
-- **初学者**: LogisticRegression, BERT, CLIP
-- **中级用户**: RoBERTa, Chinese-BERT-wwm, BLIP, GAT
-- **高级用户**: DeBERTa, ChatGLM2-6B, LLaVA, GraphTransformer
+### 开源vs闭源对比
+| 类型 | 代表产品 | 优势 | 劣势 | 适用场景 |
+|------|----------|------|------|----------|
+| **开源模型** | LLaMA, Qwen ✅ | 🔓 可控制、可定制 | 🔧 需要技术团队 | 研究、定制化应用 |
+| **闭源API** | GPT-4, Claude | 🎯 最佳性能、即开即用 | 💰 成本高、依赖性 | 快速验证、高质量应用 |
+| **本土化** | 文心一言、智谱AI | 🏠 合规性、中文优化 | 🌍 国际化程度低 | 国内商业应用 |
 
-### performance_benchmarks - 性能基准
-在MR2数据集上的预期性能:
-- **传统方法**: SVM (65%), RandomForest (68%)
-- **预训练模型**: BERT (78%), RoBERTa (79%), Chinese-BERT-wwm (80%)
-- **多模态**: CLIP (82%), BLIP (84%), Chinese-CLIP (83%)
+### LLM能力维度评估
+```
+大模型能力矩阵:
+├── 📚 语言理解:
+│   ├── 阅读理解: GPT-4 > Claude-3 > Qwen-Max
+│   ├── 多语言: GPT-4 > Gemini > ChatGLM4
+│   ├── 代码理解: GPT-4 > CodeLlama > Qwen-Coder
+│   └── 数学推理: GPT-4 > Claude-3 > MetaMath
+├── ✍️ 内容生成:
+│   ├── 创意写作: Claude-3 > GPT-4 > 文心一言
+│   ├── 技术文档: GPT-4 > Claude-3 > Qwen-Max
+│   ├── 代码生成: GPT-4 > CodeLlama > CodeGeeX
+│   └── 多模态: GPT-4V > Gemini-Pro > Qwen-VL
+├── 🤝 对话交互:
+│   ├── 人格化: Claude-3 > Character.AI > ChatGLM
+│   ├── 工具使用: GPT-4 > Qwen-Agent > GLM-4
+│   ├── 长对话: Claude-3 > GPT-4 > Kimi
+│   └── 安全性: Claude-3 > GPT-4 > 其他
+└── 🔧 专业能力:
+    ├── 科学计算: Wolfram > GPT-4 > Claude-3
+    ├── 法律分析: GPT-4 > Claude-3 > 智谱清言
+    ├── 医疗健康: Med-PaLM > GPT-4 > 灵心SoulChat
+    └── 金融分析: BloombergGPT > GPT-4 > 恒生LightGPT
+```
 
-## 💡 使用场景
+## ⚡ 参数高效微调新趋势
 
-- 查看支持的模型列表
-- 选择适合任务的模型
-- 了解模型兼容性和限制
-- 查看性能基准参考
-- 获取模型实现路径
+### 微调技术对比 (2024年最新)
+| 方法 | 参数占比 | 训练速度 | 性能保持 | 最新进展 |
+|------|----------|----------|----------|----------|
+| **LoRA** ✅ | ~0.5% | 🟢 快 | 🟡 85-95% | LoRA+, AdaLoRA, QLoRA |
+| **QLoRA** | ~0.3% | 🟢 更快 | 🟡 80-90% | 4bit量化+LoRA |
+| **DoRA** | ~0.7% | 🟡 中等 | 🟢 90-98% | 方向+幅度分解 |
+| **Delta Tuning** | ~0.1% | 🟢 极快 | 🟡 70-85% | 增量参数学习 |
+
+### 微调策略选择指南
+```
+微调方法决策树:
+├── 💾 资源充足 (>32GB显存):
+│   ├── 数据充足: 全参数微调
+│   ├── 数据有限: LoRA + 数据增强
+│   └── 多任务: Adapter + 任务特定头
+├── 💰 资源受限 (8-16GB显存):
+│   ├── 性能优先: QLoRA ✅
+│   ├── 速度优先: Delta Tuning
+│   └── 平衡选择: LoRA ✅
+├── 📱 极度受限 (<8GB显存):
+│   ├── 推理优化: 量化 + 剪枝
+│   ├── 边缘部署: 知识蒸馏
+│   └── 云端服务: API调用
+└── 🔬 研究探索:
+    ├── 新方法: DoRA, AdaLoRA ✅
+    ├── 组合优化: LoRA + Prefix
+    └── 自适应: 动态rank调整
+```
+
+## 🌟 技术选择决策指南
+
+### 基于任务类型选择
+| 任务类型 | 传统ML | 深度学习 | 预训练模型 | 大模型 |
+|---------|--------|----------|------------|--------|
+| **文本分类** | ✅ 基线 | 🎯 中等数据 | 🏆 少样本 | 💰 零样本 |
+| **序列生成** | ❌ 不适合 | 🟡 基础能力 | 🟢 好 | 🏆 最佳 |
+| **多模态** | ❌ 不支持 | 🟡 需要设计 | 🟢 CLIP类 | 🏆 统一架构 |
+| **对话系统** | ❌ 不适合 | 🟡 有限能力 | 🟡 需要训练 | 🏆 开箱即用 |
+
+### 基于资源约束选择
+```
+资源与模型匹配:
+├── 🖥️ 本地部署:
+│   ├── CPU推理: 传统ML ✅, 量化模型
+│   ├── 消费级GPU: BERT系列 ✅, 小型LLM
+│   ├── 专业GPU: 7B-13B模型 ✅, 微调
+│   └── 服务器集群: 70B+模型, 全参数训练
+├── ☁️ 云端服务:
+│   ├── 轻量应用: 在线API调用
+│   ├── 批量处理: 云GPU租用
+│   ├── 实时服务: 专用实例
+│   └── 大规模: 分布式训练
+├── 📱 边缘计算:
+│   ├── 移动设备: TensorFlow Lite, ONNX
+│   ├── 嵌入式: 量化模型, 专用芯片
+│   ├── IoT设备: 超轻量化模型
+│   └── 实时处理: 硬件加速器
+└── 🌐 混合架构:
+    ├── 边云协同: 本地+远程推理
+    ├── 分层处理: 简单本地, 复杂云端
+    ├── 智能路由: 根据负载动态分配
+    └── 缓存策略: 常用结果本地缓存
+```
+
+### 基于发展阶段选择
+| 项目阶段 | 推荐技术栈 | 重点考虑 | 升级路径 |
+|---------|------------|----------|----------|
+| **概念验证** | API调用 ✅ | 🚀 快速验证 | → 本地部署 |
+| **原型开发** | 预训练模型微调 ✅ | ⚖️ 性能平衡 | → 模型优化 |
+| **产品化** | 定制化模型 | 🎯 特定需求 | → 规模化部署 |
+| **规模化** | 分布式系统 | 📈 性能扩展 | → 下一代技术 |
+
+## 🔮 未来技术趋势
+
+### 2024-2025关键趋势
+- **🤖 Agent化**: 从对话到行动的智能体
+- **🌍 多模态原生**: 统一架构处理所有模态
+- **🧠 推理能力**: System-2思维和复杂推理
+- **⚡ 效率革命**: MoE架构和稀疏激活
+- **🔒 可信AI**: 对齐、安全和可解释性
+
+### 技术投资建议
+```
+技术学习优先级:
+├── 🎯 必须掌握 (立即学习):
+│   ├── Transformer架构原理
+│   ├── 预训练模型微调 ✅
+│   ├── 提示工程技巧
+│   └── 模型部署优化
+├── 🔧 重要技能 (3-6个月):
+│   ├── 参数高效微调 ✅
+│   ├── 多模态模型应用
+│   ├── RAG系统构建 ✅
+│   └── 模型量化压缩
+├── 📚 前沿探索 (6-12个月):
+│   ├── Agent开发框架
+│   ├── 模型安全对齐
+│   ├── 分布式训练
+│   └── 自定义CUDA核心
+└── 🚀 未来准备 (持续关注):
+    ├── 量子机器学习
+    ├── 神经符号结合
+    ├── 脑机接口应用
+    └── AGI理论基础
+```
 
 ---
 
-**[⬅️ 训练配置](training_configs.md) | [RAG配置 ➡️](rag_configs.md)**
+**[⬅️ 训练配置](training_configs.md) | [🔍 RAG配置 ➡️](rag_configs.md)**

@@ -64,8 +64,3 @@
 
 ---
 
-<div style="text-align: center; margin-top: 20px;">
-  <button onclick="window.scrollTo(0,0)" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
-    📜 返回顶部
-  </button>
-</div>

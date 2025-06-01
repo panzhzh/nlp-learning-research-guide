@@ -1,43 +1,57 @@
 # 配置模块 Config Module
 
-> 🔧 **项目配置文件管理，统一的YAML配置系统**
+> 🔧 **NLP项目配置管理的最佳实践指南**
 
-## 📋 模块概览
+## 📋 配置文件概览
 
-配置模块管理项目的所有配置文件，采用YAML格式提供结构化的参数管理。包含数据配置、模型配置、训练配置等。
+| 配置文件 | 学习重点 | 涵盖技术 |
+|---------|----------|----------|
+| [📊 数据配置](data_configs.md) | 数据处理pipeline设计 | 多模态数据、预处理策略、验证机制 |
+| [🤖 模型配置](model_configs.md) | 模型选择与参数设计 | 传统ML到大模型的完整技术栈 |
+| [🏋️ 训练配置](training_configs.md) | 训练策略与优化技巧 | 从基础训练到分布式的全方位实践 |
+| [📋 模型支持列表](supported_models.md) | 当前主流模型技术 | 2024-2025年度推荐技术栈 |
+| [🔍 RAG配置](rag_configs.md) | 检索增强生成实践 | 现代AI应用的核心技术 |
 
-## 📁 配置文件
+## 🎯 学习价值
 
-| 配置文件 | 功能说明 |
-|---------|---------|
-| [data_configs.yaml](data_configs.md) | 数据集路径、预处理参数、数据加载器配置 |
-| [model_configs.yaml](model_configs.md) | 各类模型的超参数和架构配置 |
-| [training_configs.yaml](training_configs.md) | 训练流程、优化器、学习率等训练配置 |
-| [supported_models.yaml](supported_models.md) | 支持的模型列表和兼容性信息 |
-| [rag_configs.yaml](rag_configs.md) | RAG检索增强生成系统配置 |
+### 配置管理哲学
+- **📁 统一管理**: YAML配置文件的组织原则
+- **🔍 自动发现**: 路径检测和依赖管理策略  
+- **✅ 严格验证**: 数据质量保证机制
+- **🏗️ 可扩展性**: 支持项目规模化的设计思路
 
-## 🚀 快速使用
-
-```python
-from utils.config_manager import get_config_manager
-
-# 获取配置管理器
-config_mgr = get_config_manager()
-
-# 获取各种配置
-data_config = config_mgr.get_data_config()
-model_config = config_mgr.get_model_config()
-training_config = config_mgr.get_training_config()
+### 技术栈覆盖范围
+```
+配置管理技术选择:
+├── 格式: YAML ✅ | JSON | TOML | INI
+├── 验证: Pydantic | Cerberus | Schema
+├── 管理: ConfigManager ✅ | Hydra | OmegaConf
+└── 环境: dotenv | argparse | click
 ```
 
-## ✨ 主要特性
+## 💡 设计模式学习
 
-- **统一管理**: 所有配置集中管理
-- **层次结构**: 支持嵌套配置组织
-- **自动验证**: 内置配置验证机制
-- **路径检测**: 自动检测项目和数据路径
-- **类型安全**: YAML格式提供类型检查
+### 单例模式应用
+```python
+# 全局配置管理器模式
+get_config_manager()  # 确保整个项目使用同一配置实例
+```
+
+### 工厂模式体现
+不同配置类型通过统一接口获取，体现了工厂设计模式的思想。
+
+### 策略模式运用
+支持多种数据验证策略、路径检测策略，可根据需求灵活切换。
+
+## 🚀 最佳实践总结
+
+| 实践原则 | 本项目体现 | 其他选择 |
+|---------|------------|----------|
+| **配置分离** | 按功能模块分文件 | 单文件配置、环境变量 |
+| **类型安全** | YAML + 验证器 | Pydantic、TypedDict |
+| **路径管理** | 自动检测机制 | 硬编码、相对路径 |
+| **错误处理** | 早期验证失败 | 运行时错误、静默失败 |
 
 ---
 
-**[⬅️ 返回主页](../README.md) | [数据配置 ➡️](data_configs.md)**
+**[🏠 返回主页](../README.md) | [📊 数据配置 ➡️](data_configs.md)**
