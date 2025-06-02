@@ -112,7 +112,7 @@ performance on underrepresented emotions like surprise and disgust."
 - 特殊优势（underrepresented emotions）
 ```
 
-**意义总结（20-30词）：**
+**意义总结（20-30词）-可以不写：**
 ```
 ✅ 优秀示例：
 "These findings advance fine-grained emotion understanding and provide 
