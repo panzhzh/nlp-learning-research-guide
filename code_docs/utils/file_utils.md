@@ -460,4 +460,4 @@ API设计最佳实践:
 
 ---
 
-**[⬅️ 配置管理器](config_manager.md) | [模型库模块 ➡️](../models/README.md)**
+**[⬅️ 配置管理器](code_docs/utils/config_manager.md) | [模型库模块 ➡️](code_docs/models/README.md)**

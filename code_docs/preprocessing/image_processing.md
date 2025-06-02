@@ -317,4 +317,4 @@ CV预处理技术发展:
 
 ---
 
-**[⬅️ 文本处理器](text_processing.md) | [🎮 演示脚本 ➡️](demo.md)** 
+**[⬅️ 文本处理器](code_docs/preprocessing/text_processing.md) | [🎮 演示脚本 ➡️](code_docs/preprocessing/demo.md)** 

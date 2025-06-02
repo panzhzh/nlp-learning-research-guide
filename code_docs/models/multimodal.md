@@ -568,4 +568,4 @@ CLIP模型技术实现:
 
 ---
 
-**[⬅️ 神经网络模型](../neural_networks.md) | [模型集成与优化 ➡️](../ensemble.md)**
+**[⬅️ 神经网络模型](code_docs/models/neural_networks.md) | [模型集成与优化 ➡️](code_docs/models/ensemble.md)**

@@ -302,4 +302,4 @@ PretrainedClassifier技术实现:
 
 ---
 
-**[⬅️ 图神经网络](../graph_neural_networks.md) | [模型总结与展望 ➡️](../model_summary.md)**
+**[⬅️ 图神经网络](code_docs/models/graph_neural_networks.md) | [模型总结与展望 ➡️](code_docs/models/model_summary.md)**

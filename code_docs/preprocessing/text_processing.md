@@ -394,4 +394,4 @@
 
 ---
 
-**[⬅️ 预处理模块概览](README.md) | [🖼️ 图像处理器 ➡️](image_processing.md)**
+**[⬅️ 预处理模块概览](code_docs/preprocessing/README.md) | [🖼️ 图像处理器 ➡️](code_docs/preprocessing/image_processing.md)**

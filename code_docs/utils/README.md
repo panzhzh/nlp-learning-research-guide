@@ -325,4 +325,4 @@ Python项目路径管理最佳实践:
 
 ---
 
-**[⬅️ 预处理模块](../preprocessing/README.md) | [⚙️ 配置管理器 ➡️](config_manager.md)**
+**[⬅️ 预处理模块](code_docs/preprocessing/README.md) | [⚙️ 配置管理器 ➡️](code_docs/utils/config_manager.md)**

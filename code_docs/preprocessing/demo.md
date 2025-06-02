@@ -397,4 +397,4 @@
 
 ---
 
-**[⬅️ 图像处理器](image_processing.md) | [工具模块 ➡️](../utils/README.md)**
+**[⬅️ 图像处理器](code_docs/preprocessing/image_processing.md) | [工具模块 ➡️](../utils/README.md)**
