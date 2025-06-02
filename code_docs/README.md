@@ -35,11 +35,6 @@
 - [大语言模型](code_docs/models/llms.md) - Transformer、RAG、微调技术
 - [可解释性AI](code_docs/models/explainable_ai.md) - LIME、SHAP、Anchors解释方法
 
-### 📝 训练模块
-- [训练框架概览](code_docs/training/) - 模型训练和优化框架
-- [基础训练器](code_docs/training/base_trainer.md) - 通用训练器基类
-- [微调方法](code_docs/training/fine_tuning.md) - LoRA、AdaLoRA等参数高效微调
-
 ### 🛠️ 工具模块
 - [工具库概览](code_docs/utils/) - 通用工具和辅助函数
 - [配置管理器](code_docs/utils/config_manager.md) - 配置文件加载和管理

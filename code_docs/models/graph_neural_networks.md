@@ -321,4 +321,4 @@ GNN技术选型指南:
 
 ---
 
-**[⬅️ 多模态模型](code_docs/models/multimodal.md) | [模型对比与选择 ➡️](code_docs/models/model_comparison.md)**
+**[⬅️ 多模态模型](code_docs/models/multimodal.md) | [大语言模型 ➡️](code_docs/models/llms.md)**

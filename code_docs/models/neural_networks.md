@@ -563,4 +563,4 @@ NN组件技术栈实现:
 
 ---
 
-**[⬅️ 传统机器学习](code_docs/models/traditional.md) | [模型集成与对比 ➡️](code_docs/models/ensemble.md)**
+**[⬅️ 传统机器学习](code_docs/models/traditional.md) | [预训练模型 ➡️](code_docs/models/pretrained.md)**
