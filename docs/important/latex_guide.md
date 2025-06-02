@@ -749,7 +749,7 @@ xelatex main.tex                % 推荐使用XeLaTeX
 ```latex
 % 图片显示问题
 % 1. 图片路径
-\graphicspath{{figures/}{images/}}  % 设置图片路径
+\graphicspath{{"figures/"}{"images/"}}  % 设置图片路径
 
 % 2. 支持的格式
 % PDFLaTeX: .pdf, .png, .jpg
