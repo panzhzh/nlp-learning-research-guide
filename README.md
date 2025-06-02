@@ -10,7 +10,7 @@
 
 - **[📖 文档](https://panzhzh.github.io/nlp-learning-research-guide/#/docs/)** - 在线文档网站
 - **[💻 代码](https://panzhzh.github.io/nlp-learning-research-guide/#/code_docs/)** - 配套实现代码
-- **[🔗 资源](https://panzhzh.github.io/nlp-learning-research-guide/#/assets/)** - 相关资源文件
+- **[🔗 重要-必看](https://panzhzh.github.io/nlp-learning-research-guide/#/docs/important)** - 重要内容-必看
 
 ## 🚀 快速开始
 
