@@ -12,7 +12,15 @@
 - **[💻 代码](https://panzhzh.github.io/nlp-learning-research-guide/#/code_docs/)** - 配套实现代码
 - **[🔗 重要-必看](https://panzhzh.github.io/nlp-learning-research-guide/#/docs/important/)** - 重要内容-必看
 
-## 🚀 优秀文档
+## 🚀 常用网址
+
+- **[📖 Gemini](https://gemini.google.com/app)** - 学生友好大模型网站，免费15个月
+- **[📖 论文混合检索](https://axsight.top/survey)** - 论文混合检索开源网站，支持顶会顶刊和预印本
+- **[📖 论文代码及数据集检索](https://paperswithcode.com/)** - 检索论文源码及数据集
+- **[📖 Github](https://github.com/)** - 社区规模最大的代码开源平台
+- **[📖 Hugging face](https://huggingface.co/)** - 社区规模最大的开源模型平台
+- **[📖 在线latex编写](https://www.overleaf.com)** - latex论文在线编写平台
+- **[📖 国际会议列表](https://www.myhuiban.com/)** - 全球国际会议列表，支持CCF，CORE，QUALIS等分级，共5000+
 
 ## 🤝 贡献指南
 
