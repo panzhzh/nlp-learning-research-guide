@@ -21,6 +21,7 @@
 - **[📖 Hugging face](https://huggingface.co/)** - 社区规模最大的开源模型平台
 - **[📖 在线latex编写](https://www.overleaf.com)** - latex论文在线编写平台
 - **[📖 国际会议列表](https://www.myhuiban.com/)** - 全球国际会议列表，支持CCF，CORE，QUALIS等分级，共5000+
+- **[📖 遇见数据集](https://www.selectdataset.com/)** - 开源数据集网站，类似很多
 
 ## 🤝 贡献指南
 
