@@ -54,6 +54,7 @@
 ### [附录](./appendix/)
 - [附录A 重要会议与期刊列表](./docs/appendix/conferences-journals-list.md)
 - [附录B 常用工具与资源](./docs/appendix/tools-resources.md)
+- [附录C SCI论文配图绘制指南](./docs/appendix/publication_guidelines.md)
 
 ## 🚀 如何使用本笔记
 
