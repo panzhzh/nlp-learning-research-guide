@@ -1,7 +1,3 @@
-Below is a complete, guideline and Python recipe using matplotlib to produce publication‑ready figures for SCI journals. The code examples use a custom color palette and save output as PDF. Do not include any Chinese characters in figure text or code.
-
----
-
 ## 1. General Rules
 
 * **Language:** All figure labels, annotations, legends, and code comments must be in English. No Chinese characters are permitted.
@@ -39,7 +35,7 @@ plt.figure(figsize=(3.3, 2.5), dpi=300)
   plt.rcParams.update({
       'font.family': 'serif',
       'font.serif': ['Arial'],
-      'font.size': 10,
+      'font.size': 8,
       'text.color': 'k',
       'axes.labelcolor': 'k',
       'xtick.color': 'k',
@@ -55,13 +51,13 @@ plt.figure(figsize=(3.3, 2.5), dpi=300)
             '#bcbd22', '#17becf']
   ```
 
-| Element              | Font Size (pt) | Color       | Notes                                         |
-| -------------------- | -------------- | ----------- | --------------------------------------------- |
-| Axis labels          | 8           | `'#000000'` | e.g. `ax.set_xlabel('Time (s)', fontsize=10)` |
-| Tick labels          | 8            | `'#000000'` | `ax.tick_params(labelsize=8)`                 |
-| Legend text          | 8            | `'#000000'` | `ax.legend(frameon=False)`                    |
-| Annotation text      | 8            | `'#000000'` | `ax.text(x, y, 'note', fontsize=7)`           |
-| Panel labels (A, B…) | 10          | `'#000000'` | Bold, placed at axes corner                   |
+| Element                   | Font Size (pt) | Color       | Notes                                         |
+| ------------------------- | -------------- | ----------- | --------------------------------------------- |
+| Axis labels               | 8              | `'#000000'` | e.g. `ax.set_xlabel('Time (s)', fontsize=8)` |
+| Tick labels               | 8              | `'#000000'` | `ax.tick_params(labelsize=8)`                 |
+| Legend text               | 8              | `'#000000'` | `ax.legend(frameon=False)`                    |
+| Annotation text           | 8              | `'#000000'` | `ax.text(x, y, 'note', fontsize=7)`           |
+| Subplot subtitles (A, B…) | 8              | `'#000000'` | Placed above each subplot, no bold            |
 
 ---
 
@@ -97,7 +93,7 @@ import numpy as np
 plt.rcParams.update({
     'font.family': 'serif',
     'font.serif': ['Arial'],
-    'font.size': 10,
+    'font.size': 8,
     'text.color': 'k',
     'axes.labelcolor': 'k',
     'xtick.color': 'k',
@@ -117,12 +113,13 @@ S = np.sin(t)
 
 # Plot
 ax.plot(t, S, linewidth=1.2, color=colors[0], label='Sine wave')
-ax.set_xlabel('Time (s)', fontsize=10)
-ax.set_ylabel('Amplitude', fontsize=10)
-ax.tick_params(axis='both', which='major', labelsize=8)
+ax.set_xlabel('Time (s)', fontsize=8)
+ax.set_ylabel('Amplitude', fontsize=8)
+ax.tick_params(axis='both', which='major', labelsize=7)
 ax.legend(frameon=False)
 
-# Save as PDF\ nplt.tight_layout()
+# Save as PDF
+plt.tight_layout()
 plt.savefig('figure1.pdf', format='pdf')
 ```
 
@@ -141,13 +138,13 @@ for i, ax in enumerate(axs.flat):
             color=colors[i], label=f'Series {i+1}')
     ax.set_xlim(0, 10)
     if i in [2, 3]:
-        ax.set_xlabel('Time (s)', fontsize=10)
+        ax.set_xlabel('Time (s)', fontsize=8)
     if i in [0, 2]:
-        ax.set_ylabel('Amplitude', fontsize=10)
-    # Panel label
-    ax.text(0.02, 0.95, letters[i],
+        ax.set_ylabel('Amplitude', fontsize=8)
+    # Panel subtitle
+    ax.text(0.5, 1.02, letters[i],
             transform=ax.transAxes,
-            fontsize=12, fontweight='bold', va='top', color='k')
+            fontsize=8, fontweight='normal', ha='center', va='top', color='k')
     ax.tick_params(labelsize=8)
 # Adjust spacing
 plt.subplots_adjust(wspace=0.3, hspace=0.3)
